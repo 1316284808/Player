@@ -1,0 +1,536 @@
+<Window x:Class="Player.Left.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:helpers="clr-namespace:Player.Helpers" 
+        Width="500" 
+        Height="600"
+        ResizeMode="NoResize"
+        Style="{StaticResource DialogWindow}">
+    
+    <!-- 移除本地资源定义，使用应用程序级别的主题资源 -->
+    
+    <Border Background="White" CornerRadius="8" Padding="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- 标题 -->
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <TextBlock Text="设置" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Center"/>
+                <Button Style="{StaticResource PlayerIconButton}"
+                        HorizontalAlignment="Right"
+                        Click="CloseButton_Click"
+                        ToolTip="关闭">
+                    <helpers:CustomIcon Kind="Close" Width="24" Height="24" Foreground="{DynamicResource PrimaryBrush}"/>
+                </Button>
+            </Grid>
+
+            <!-- TabControl 内容区域 -->
+            <TabControl Grid.Row="1" BorderThickness="0" Background="Transparent">
+                <TabControl.Resources>
+                    <!-- Tab 选项卡头样式 -->
+                    <Style TargetType="TabItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Border x:Name="Border" 
+                                            Background="Transparent" 
+                                            BorderThickness="0,0,0,2" 
+                                            BorderBrush="Transparent"
+                                            Padding="15,10"
+                                            Margin="0,0,5,0">
+                                        <ContentPresenter x:Name="ContentSite"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center"
+                                                        ContentSource="Header"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                                            <Setter TargetName="ContentSite" Property="TextElement.Foreground" Value="{DynamicResource PrimaryBrush}"/>
+                                            <Setter TargetName="ContentSite" Property="TextElement.FontWeight" Value="SemiBold"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource SecondaryLightBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
+                
+                <!-- 主题色 Tab -->
+                <TabItem Header="主题外观">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10">
+                        <ScrollViewer.Resources>
+                            <!-- 垂直滚动条样式 -->
+                            <Style TargetType="ScrollBar">
+                                <Setter Property="Width" Value="6"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Opacity" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ScrollBar">
+                                            <Grid Background="Transparent">
+                                                <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                                    <Track.DecreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" Focusable="False"/>
+                                                    </Track.DecreaseRepeatButton>
+                                                    <Track.Thumb>
+                                                        <Thumb>
+                                                            <Thumb.Style>
+                                                                <Style TargetType="Thumb">
+                                                                    <Setter Property="Background" Value="#B0B0B0"/>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="Thumb">
+                                                                                <Border x:Name="ThumbBorder" 
+                                                                                        Background="{TemplateBinding Background}" 
+                                                                                        CornerRadius="3" 
+                                                                                        Width="6"/>
+                                                                                <ControlTemplate.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                    <Trigger Property="IsDragging" Value="True">
+                                                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                </ControlTemplate.Triggers>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                </Style>
+                                                            </Thumb.Style>
+                                                        </Thumb>
+                                                    </Track.Thumb>
+                                                    <Track.IncreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.LineDownCommand" Opacity="0" Focusable="False"/>
+                                                    </Track.IncreaseRepeatButton>
+                                                </Track>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <!-- 鼠标悬停时显示滚动条 -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Opacity" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                            <!-- ScrollViewer样式 -->
+                            <Style TargetType="ScrollViewer">
+                                <Setter Property="Padding" Value="0 0 8 0"/>
+                            </Style>
+                        </ScrollViewer.Resources>
+                        <StackPanel>
+                            <!-- 预设主题色 -->
+                            <TextBlock Text="预设主题色" FontSize="14" FontWeight="SemiBold" Margin="0,10,0,10"/>
+                            <WrapPanel Margin="0,0,0,20">
+                                <Button x:Name="ColorPurple" Width="50" Height="50" Background="#7B68EE" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#7B68EE"
+                                        ToolTip="紫罗兰" Margin="0,0,10,10"/>
+                                <Button x:Name="ColorBlue" Width="50" Height="50" Background="#2196F3" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#2196F3"
+                                        ToolTip="蓝色" Margin="0,0,10,10"/>
+                                <Button x:Name="ColorGreen" Width="50" Height="50" Background="#4CAF50" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#4CAF50"
+                                        ToolTip="绿色" Margin="0,0,10,10"/>
+                                <Button x:Name="ColorOrange" Width="50" Height="50" Background="#FF9800" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#FF9800"
+                                        ToolTip="橙色" Margin="0,0,10,10"/>
+                                <Button x:Name="ColorRed" Width="50" Height="50" Background="#F44336" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#F44336"
+                                        ToolTip="红色" Margin="0,0,10,10"/>
+                                <Button Width="50" Height="50" Background="#9C27B0" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#9C27B0"
+                                        ToolTip="紫色" Margin="0,0,10,10"/>
+                                <Button Width="50" Height="50" Background="#00BCD4" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#00BCD4"
+                                        ToolTip="青色" Margin="0,0,10,10"/>
+                                <Button Width="50" Height="50" Background="#FFEB3B" 
+                                        Style="{StaticResource PlayerMainButton}"
+                                        Click="ThemeColor_Click" Tag="#FFEB3B"
+                                        ToolTip="黄色" Margin="0,0,10,10"/>
+                            </WrapPanel>
+                            
+                            <Separator Margin="0,0,0,15"/>
+                            
+                            <!-- 自定义颜色 -->
+                            <TextBlock Text="自定义颜色" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                            <Border Background="{DynamicResource SecondaryLightBrush}" 
+                                    CornerRadius="8" 
+                                    Padding="15"
+                                    Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="15"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <!-- 颜色值输入 -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBlock Grid.Column="0" Text="颜色值：" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBox x:Name="CustomColorTextBox" 
+                                                 Grid.Column="1" 
+                                                 Text="#7B68EE" 
+                                                 VerticalAlignment="Center"
+                                                 Padding="8"
+                                                 FontFamily="Consolas"
+                                                 FontSize="14"
+                                                 BorderBrush="{DynamicResource PrimaryBrush}"
+                                                 TextChanged="CustomColorTextBox_TextChanged"/>
+                                        <Rectangle x:Name="CustomColorPreview" 
+                                                   Grid.Column="2" 
+                                                   Width="50" 
+                                                   Height="35" 
+                                                   Fill="#7B68EE" 
+                                                   Stroke="{DynamicResource PrimaryBrush}"
+                                                   StrokeThickness="1"
+                                                   RadiusX="5"
+                                                   RadiusY="5"
+                                                   Margin="10,0,0,0"/>
+                                    </Grid>
+                                    
+                                    <!-- RGB 滑块 -->
+                                    <Grid Grid.Row="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="25"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- R -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="R" Foreground="#F44336" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                        <Slider x:Name="CustomRedSlider" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="255" Value="123" 
+                                                Margin="10,5" ValueChanged="CustomRgbSlider_ValueChanged"/>
+                                        <TextBlock x:Name="CustomRedValue" Grid.Row="0" Grid.Column="2" Text="123" VerticalAlignment="Center" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                                        
+                                        <!-- G -->
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="G" Foreground="#4CAF50" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                        <Slider x:Name="CustomGreenSlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="255" Value="104" 
+                                                Margin="10,5" ValueChanged="CustomRgbSlider_ValueChanged"/>
+                                        <TextBlock x:Name="CustomGreenValue" Grid.Row="1" Grid.Column="2" Text="104" VerticalAlignment="Center" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                                        
+                                        <!-- B -->
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="B" Foreground="#2196F3" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                        <Slider x:Name="CustomBlueSlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" Value="238" 
+                                                Margin="10,5" ValueChanged="CustomRgbSlider_ValueChanged"/>
+                                        <TextBlock x:Name="CustomBlueValue" Grid.Row="2" Grid.Column="2" Text="238" VerticalAlignment="Center" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                
+                <!-- 视频设置 Tab -->
+                <TabItem Header="视频设置">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10">
+                        <ScrollViewer.Resources>
+                            <!-- 垂直滚动条样式 -->
+                            <Style TargetType="ScrollBar">
+                                <Setter Property="Width" Value="6"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Opacity" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ScrollBar">
+                                            <Grid Background="Transparent">
+                                                <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                                    <Track.DecreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" Focusable="False"/>
+                                                    </Track.DecreaseRepeatButton>
+                                                    <Track.Thumb>
+                                                        <Thumb>
+                                                            <Thumb.Style>
+                                                                <Style TargetType="Thumb">
+                                                                    <Setter Property="Background" Value="#B0B0B0"/>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="Thumb">
+                                                                                <Border x:Name="ThumbBorder" 
+                                                                                        Background="{TemplateBinding Background}" 
+                                                                                        CornerRadius="3" 
+                                                                                        Width="6"/>
+                                                                                <ControlTemplate.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                    <Trigger Property="IsDragging" Value="True">
+                                                                                        <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                                    </Trigger>
+                                                                                </ControlTemplate.Triggers>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                </Style>
+                                                            </Thumb.Style>
+                                                        </Thumb>
+                                                    </Track.Thumb>
+                                                    <Track.IncreaseRepeatButton>
+                                                        <RepeatButton Command="ScrollBar.LineDownCommand" Opacity="0" Focusable="False"/>
+                                                    </Track.IncreaseRepeatButton>
+                                                </Track>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <!-- 鼠标悬停时显示滚动条 -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Opacity" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                            <!-- ScrollViewer样式 -->
+                            <Style TargetType="ScrollViewer">
+                                <Setter Property="Padding" Value="0 0 8 0"/>
+                            </Style>
+                        </ScrollViewer.Resources>
+                        <StackPanel>
+                            <!-- GPU加速开关 -->
+                            <Grid Margin="0,10,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="GPU 加速" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="启用硬件加速解码，降低 CPU 占用" 
+                                               FontSize="12" Foreground="Gray" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <ToggleButton x:Name="GpuAccelerationToggle" Grid.Column="1" 
+                                              Style="{StaticResource ModernToggleSwitch}"
+                                              VerticalAlignment="Center"
+                                              Checked="GpuAcceleration_Changed"
+                                              Unchecked="GpuAcceleration_Changed"/>
+                            </Grid>
+
+                            <!-- 视频超分辨率 -->
+                            <Grid Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="视频超分辨率" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="AI 提升视频画质，需要 GPU 支持" 
+                                               FontSize="12" Foreground="Gray" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <ToggleButton x:Name="SuperResolutionToggle" Grid.Column="1" 
+                                              Style="{StaticResource ModernToggleSwitch}"
+                                              VerticalAlignment="Center"
+                                              Checked="SuperResolution_Changed"
+                                              Unchecked="SuperResolution_Changed"/>
+                            </Grid>
+
+                            <!-- VLC 高级设置 -->
+                            <Border Background="{DynamicResource SecondaryLightBrush}" 
+                                    CornerRadius="8" 
+                                    Padding="15"
+                                    Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="VLC 高级设置" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,15"/>
+
+                                    <!-- 视频渲染器 -->
+                                    <Grid Margin="0,0,0,15">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="视频渲染器" FontSize="13" FontWeight="Medium"/>
+                                        <ComboBox Grid.Row="1" x:Name="VideoRendererComboBox" 
+                                                  Margin="0,5,0,0" 
+                                                  Style="{StaticResource CompactComboBox}" 
+                                                  Width="auto"
+                                                  SelectedValuePath="Content">
+                                            <ComboBoxItem Width="auto">direct3d11</ComboBoxItem>
+                                            <ComboBoxItem Width="auto">direct3d9</ComboBoxItem>
+                                            <ComboBoxItem Width="auto">d3d11</ComboBoxItem>
+                                            <ComboBoxItem Width="auto">d3d9</ComboBoxItem>
+                                            <ComboBoxItem Width="auto">angle</ComboBoxItem>
+                                        </ComboBox>
+                                    </Grid>
+
+                                    <!-- 缓存设置 -->
+                                    <StackPanel Margin="0,0,0,15">
+                                        <TextBlock Text="缓存设置" FontSize="13" FontWeight="Medium" Margin="0,0,0,5"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <!-- 文件缓存 -->
+                                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                                <TextBlock Text="文件缓存 (ms)" FontSize="12"/>
+                                                <TextBox x:Name="FileCachingTextBox" 
+                                                         Margin="0,5,0,0" 
+                                                         Padding="5" 
+                                                         FontFamily="Consolas" 
+                                                         MaxLength="4" 
+                                                         Width="80"/>
+                                            </StackPanel>
+
+                                            <!-- 网络缓存 -->
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="网络缓存 (ms)" FontSize="12"/>
+                                                <TextBox x:Name="NetworkCachingTextBox" 
+                                                         Margin="0,5,0,0" 
+                                                         Padding="5" 
+                                                         FontFamily="Consolas" 
+                                                         MaxLength="4" 
+                                                         Width="80"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <!-- 性能优化选项 -->
+                                    <StackPanel Margin="0,0,0,15">
+                                        <TextBlock Text="性能优化" FontSize="13" FontWeight="Medium" Margin="0,0,0,10"/>
+
+                                        <!-- 使用系统内存 -->
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="使用系统内存" FontSize="12"/>
+                                            <ToggleButton x:Name="UseSystemMemoryToggle" Grid.Column="1"
+                                                          Style="{StaticResource ModernToggleSwitch}"
+                                                          VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <!-- 启用硬件YUV转换 -->
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="启用硬件YUV转换" FontSize="12"/>
+                                            <ToggleButton x:Name="EnableHardwareYUVToggle" Grid.Column="1"
+                                                          Style="{StaticResource ModernToggleSwitch}"
+                                                          VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <!-- 跳过环路滤波 -->
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="跳过环路滤波" FontSize="12"/>
+                                            <ToggleButton x:Name="SkipLoopFilterToggle" Grid.Column="1"
+                                                          Style="{StaticResource ModernToggleSwitch}"
+                                                          VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <!-- 启用快速解码 -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="启用快速解码" FontSize="12"/>
+                                            <ToggleButton x:Name="EnableFastDecodingToggle" Grid.Column="1"
+                                                          Style="{StaticResource ModernToggleSwitch}"
+                                                          VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <!-- 视频质量选项 -->
+                                    <StackPanel>
+                                        <TextBlock Text="视频质量" FontSize="13" FontWeight="Medium" Margin="0,0,0,10"/>
+
+                                        <!-- 不丢弃延迟帧 -->
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="不丢弃延迟帧" FontSize="12"/>
+                                            <ToggleButton x:Name="NoDropLateFramesToggle" Grid.Column="1"
+                                                          Style="{StaticResource ModernToggleSwitch}"
+                                                          VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <!-- 不跳过帧 -->
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="不跳过帧" FontSize="12"/>
+                                            <ToggleButton x:Name="NoSkipFramesToggle" Grid.Column="1"
+                                                          Style="{StaticResource ModernToggleSwitch}"
+                                                          VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <!-- 启用去隔行 -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="启用去隔行" FontSize="12"/>
+                                                <ComboBox x:Name="DeinterlaceModeComboBox" 
+                                                          Margin="0,5,0,0" 
+                                                          Style="{StaticResource CompactComboBox}" 
+                                                          SelectedValuePath="Content" 
+                                                          Width="120">
+                                                    <ComboBoxItem>blend</ComboBoxItem>
+                                                    <ComboBoxItem>bob</ComboBoxItem>
+                                                    <ComboBoxItem>weave</ComboBoxItem>
+                                                </ComboBox>
+                                            </StackPanel>
+                                            <ToggleButton x:Name="EnableDeinterlaceToggle" Grid.Column="1"
+                                                          Style="{StaticResource ModernToggleSwitch}"
+                                                          VerticalAlignment="Top" 
+                                                          Margin="0,15,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+
+            <!-- 底部按钮 -->
+            <Grid Grid.Row="2" Margin="0,20,0,0">
+                <Button Content="应用" 
+                        Style="{StaticResource PlayerMainButton}"
+                        Background="{DynamicResource PrimaryBrush}"
+                        Foreground="White"
+                        HorizontalAlignment="Right"
+                        Padding="30,8"
+                        Click="ApplySettings_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,44 @@
+<Window x:Class="Player.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Player" 
+        xmlns:left="clr-namespace:Player.Left" 
+        xmlns:middle="clr-namespace:Player.Middle"
+        xmlns:bottom="clr-namespace:Player.Bottom"
+        mc:Ignorable="d"
+        Title="媒体播放器" Icon="/a4mbd-h9wgx.png"
+        Background="{DynamicResource SecondaryLightBrush}">
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static MediaCommands.Play}" Executed="PlayPauseCommand_Executed"/>
+        <CommandBinding Command="{x:Static ApplicationCommands.Open}" Executed="OpenFile_Executed"/>
+    </Window.CommandBindings>
+    <!-- 主Grid -->
+    <Grid AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter" Background="#F5F5F5">
+        <!-- 列定义：左侧固定宽度，右侧自动填充剩余空间 -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="LeftColumn" Width="Auto"/>
+            <ColumnDefinition x:Name="RightColumn" Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 左侧区域：使用left命名空间引用LeftControl -->
+        <left:LeftControl x:Name="leftControl" Grid.Column="0"/>
+        <!-- 直接用left别名引用，无需额外前缀 -->
+
+        <!-- 右侧区域（包含两行） -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2.5*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 右侧第一行 -->
+            <middle:MiddleControl Grid.Row="0"/>
+
+            <!-- 右侧第二行 -->
+            <bottom:BottomControl Grid.Row="1" />
+
+        </Grid>
+    </Grid>
+</Window>
