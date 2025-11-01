@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- WPF应用配置 -->
+  <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
+    <ApplicationIcon>JSON\1q0yz-olmzi-001.ico</ApplicationIcon>
+    <PackageIcon>a4mbd-h9wgx.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="VLC\**" />
+    <EmbeddedResource Remove="VLC\**" />
+    <None Remove="VLC\**" />
+    <Page Remove="VLC\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- JSON配置文件：复制到输出目录 -->
+    <None Include="JSON\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="a4mbd-h9wgx.png" />
+    <None Remove="JSON\a4mbd-h9wgx.png" />
+    <None Remove="JSON\hardware_settings.json" />
+    <None Remove="JSON\history.json" />
+    <None Remove="JSON\theme.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DesignData Include="JSON\1q0yz-olmzi-001.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </DesignData>
+    <DesignData Include="JSON\a4mbd-h9wgx.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </DesignData>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="JSON\hardware_settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="JSON\history.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="JSON\theme.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LibVLCSharp" Version="3.9.4" />
+    <PackageReference Include="LibVLCSharp.Wpf" Version="3.9.4" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
+    <!-- 添加用于系统通知的包 -->
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Player.Core\Player.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="a4mbd-h9wgx.png" />
+  </ItemGroup>
+
+</Project>

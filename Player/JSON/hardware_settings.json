@@ -1,0 +1,5 @@
+{
+  "EnableGPUAcceleration": false,
+  "EnableSuperResolution": false,
+  "SuperResolutionLevel": 2
+}
