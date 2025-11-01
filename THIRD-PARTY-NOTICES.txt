@@ -1,0 +1,35 @@
+第三方开源库声明与鸣谢
+
+本程序使用了以下开源库，各库的使用均遵循其原始开源协议。在此，我们对这些优秀库的开发者表示诚挚的感谢和敬意！
+
+1. LibVLCSharp
+   - 作者/维护者：VideoLAN 团队
+   - 项目地址：https://github.com/videolan/libvlcsharp
+   - 许可协议：GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later)
+   - 协议全文：https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+   - 致敬与鸣谢：感谢 VideoLAN 团队开发并维护如此强大的媒体播放库，为跨平台媒体应用开发提供了坚实基础。
+
+2. LibVLCSharp.WPF
+   - 作者/维护者：VideoLAN 团队
+   - 项目地址：https://github.com/videolan/libvlcsharp
+   - 许可协议：GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later)
+   - 协议全文：https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+   - 致敬与鸣谢：向 VideoLAN 团队致以崇高敬意，感谢他们将 LibVLC 功能完美地集成到 WPF 应用中，极大简化了媒体应用的开发难度。
+
+3. VideoLAN.LibVLC.Windows
+   - 作者/维护者：VideoLAN 团队
+   - 项目地址：https://code.videolan.org/videolan/libvlc
+   - 许可协议：GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later)
+   - 协议全文：https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+   - 致敬与鸣谢：衷心感谢 VideoLAN 团队多年来持续维护和改进 VLC 媒体播放器核心引擎，使其成为业界领先的开源媒体框架。
+
+4. Hardcodet.NotifyIcon.Wpf
+   - 作者/维护者：Philipp Sumi
+   - 项目地址：https://github.com/hardcodet/wpf-notifyicon
+   - 许可协议：MIT License
+   - 协议全文：https://opensource.org/licenses/MIT
+   - 致敬与鸣谢：感谢 Philipp Sumi 开发的高质量通知图标库，为 WPF 应用提供了优雅、易用的系统托盘集成方案。
+
+本程序主体部分版权归 [开发者名称/组织] 所有，遵循 GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later) 许可。
+
+再次感谢所有开源贡献者的辛勤工作和无私分享！
