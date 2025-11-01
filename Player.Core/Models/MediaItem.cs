@@ -14,5 +14,7 @@ namespace Player.Core.Models
         /// 媒体文件路径
         /// </summary>
         public string Path { get; set; } = string.Empty;
+         
+
     }
 }

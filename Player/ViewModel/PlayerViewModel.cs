@@ -16,11 +16,10 @@ namespace Player.ViewModel
 {
     public class PlayerViewModel : INotifyPropertyChanged
     {
-        private bool _isPlaying;
+        private PlaybackState _playbackState = new PlaybackState();
         private string _currentTime = "0:00";
         private string _totalTime = "0:00";
         private double _progress;
-        private double _volume = 80;
         private bool _controlsEnabled = false;
         private bool _isUserInitiated = false;
         
@@ -47,10 +46,22 @@ namespace Player.ViewModel
         }
 
         // 属性
+        public PlaybackState PlaybackState
+        {
+            get => _playbackState;
+            set { _playbackState = value; OnPropertyChanged(); }
+        }
+
         public bool IsPlaying
         {
-            get => _isPlaying;
-            set { _isPlaying = value; OnPropertyChanged(); }
+            get => _playbackState.IsPlaying;
+            set { 
+                if (_playbackState.IsPlaying != value) {
+                    _playbackState.IsPlaying = value; 
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(PlaybackState));
+                }
+            }
         }
 
         public string CurrentTime
@@ -73,8 +84,14 @@ namespace Player.ViewModel
 
         public double Volume
         {
-            get => _volume;
-            set { _volume = value; OnPropertyChanged(); }
+            get => _playbackState.Volume;
+            set { 
+                if (_playbackState.Volume != value) {
+                    _playbackState.Volume = (int)value; 
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(PlaybackState));
+                }
+            }
         }
 
         public bool ControlsEnabled

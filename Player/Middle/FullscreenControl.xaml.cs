@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Player.Helpers;
 using Player.Core.Enums;
+using Player.Core.Models;
 using LibVLCSharp.Shared;
 
 namespace Player.Middle
@@ -14,22 +15,60 @@ namespace Player.Middle
     /// </summary>
     public partial class FullscreenControl : UserControl
     {
+        // 私有字段用于存储MediaPlayer引用
+        private LibVLCSharp.Shared.MediaPlayer? _mediaPlayer;
+           private PlaybackState _playbackState = new PlaybackState();
         // 公共属性，用于与父窗口通信
-        public LibVLCSharp.Shared.MediaPlayer? MediaPlayer { get; set; }
-        public bool IsPlaying 
+        public LibVLCSharp.Shared.MediaPlayer? MediaPlayer 
         { 
-            get { return isPlaying; }
+            get { return _mediaPlayer; }
             set 
             { 
-                isPlaying = value; 
-                UpdatePlayIcon(isPlaying);
+                // 移除旧的MediaPlayer事件订阅
+                if (_mediaPlayer != null)
+                {
+                    _mediaPlayer.Playing -= MediaPlayer_Playing;
+                    _mediaPlayer.Paused -= MediaPlayer_Paused;
+                    _mediaPlayer.Stopped -= MediaPlayer_Stopped;
+                    _mediaPlayer.EndReached -= MediaPlayer_EndReached;
+                }
+                
+                // 设置新的MediaPlayer引用
+                _mediaPlayer = value;
+                
+                // 订阅新的MediaPlayer事件
+                if (_mediaPlayer != null)
+                {
+                    _mediaPlayer.Playing += MediaPlayer_Playing;
+                    _mediaPlayer.Paused += MediaPlayer_Paused;
+                    _mediaPlayer.Stopped += MediaPlayer_Stopped;
+                    _mediaPlayer.EndReached += MediaPlayer_EndReached;
+                    
+                    // 根据MediaPlayer的实际状态更新UI
+                    IsPlaying = _mediaPlayer.IsPlaying;
+                }
             } 
         }
         
-        // 状态变量
-        private bool isMuted = false;
-        private double volumeBeforeMute = 80;
-        private bool isPlaying = false;
+        // 播放状态对象
+     
+        
+        public bool IsPlaying 
+        { 
+            get { return _playbackState.IsPlaying; } 
+            set 
+            { 
+                if (_playbackState.IsPlaying != value)
+                {
+                    _playbackState.IsPlaying = value; 
+                    // 直接使用UIControlManager更新图标
+                    if (PlayPauseButton != null)
+                    {
+                        UIControlManager.UpdatePlayIcon(PlayPauseButton, value);
+                    }
+                }
+            } 
+        }
         
         // 计时器用于更新播放进度，允许为null
         private DispatcherTimer? _progressTimer;
@@ -37,6 +76,7 @@ namespace Player.Middle
         private DispatcherTimer? _hideControlsTimer;
         private bool _isUserDragging = false; // 标记用户是否正在拖动进度条
         private bool _wasPlayingBeforeDrag = false; // 记录拖动前的播放状态
+        private DateTime? _lastProgressUpdate; // 用于限制进度条更新频率
         private bool _controlsVisible = true; // 控制栏可见状态
         
         public event RoutedEventHandler? ExitFullscreen;
@@ -51,6 +91,8 @@ namespace Player.Middle
             
             // 在构造函数中就明确设置播放状态为false，使用公共属性
             IsPlaying = false;
+            _playbackState.Volume = 80;
+            _playbackState.VolumeBeforeMute = 80;
             
             // 初始化播放进度计时器
             _progressTimer = new DispatcherTimer
@@ -99,9 +141,25 @@ namespace Player.Middle
                                 // 确保UI元素仍然有效
                                 if (ProgressBar != null && TimeDisplay != null)
                                 {
+                                    // 修复问题1：确保进度不会在18秒处停住，正确处理边界
+                                    // 如果视频已结束（当前时间接近总时长），确保进度显示为100%
+                                    if (currentTime >= totalTime - 100) // 距离结束100毫秒内视为结束
+                                    {
+                                        currentTime = totalTime;
+                                    }
+                                    
                                     // 更新进度条（转换为百分比）
                                     double progress = (double)currentTime / totalTime * 100;
-                                    ProgressBar.Value = progress;
+                                    
+                                    // 确保进度在0-100范围内
+                                    progress = Math.Max(0, Math.Min(100, progress));
+                                    
+                                    // 修复问题2：统一限制更新频率，避免鼠标焦点时刷新过快
+                                    if (_lastProgressUpdate == null || DateTime.Now.Subtract(_lastProgressUpdate.Value).TotalMilliseconds > 200)
+                                    {
+                                        _lastProgressUpdate = DateTime.Now;
+                                        ProgressBar.Value = progress;
+                                    }
                                     
                                     // 更新时间显示
                                     TimeDisplay.Text = $"{FormatTime(currentTime)} / {FormatTime(totalTime)}";
@@ -118,15 +176,15 @@ namespace Player.Middle
                             _progressTimer.Stop();
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        // 捕获其他可能的异常
+                        System.Diagnostics.Debug.WriteLine($"进度更新错误: {ex.Message}");
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // 最外层异常捕获，确保计时器不会因为任何未预期的错误而崩溃
+                System.Diagnostics.Debug.WriteLine($"进度更新错误: {ex.Message}");
             }
         }
         
@@ -147,7 +205,7 @@ namespace Player.Middle
             // 初始化音量值
             if (VolumeSlider != null)
             {
-                volumeBeforeMute = VolumeSlider.Value;
+                _playbackState.VolumeBeforeMute = (int)VolumeSlider.Value;
                 UpdateVolumeIcon(VolumeSlider.Value);
                 
                 // 设置媒体播放器的初始音量
@@ -158,13 +216,8 @@ namespace Player.Middle
             }
             
             // 明确重置播放状态并设置初始图标为播放图标▶
-            isPlaying = false;
-            SetPlayButtonToPlayIcon();
-            
-            // 确保视觉树完全加载后再次设置
-            Dispatcher.BeginInvoke(new Action(() => {
-                SetPlayButtonToPlayIcon();
-            }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+            IsPlaying = false;
+            UIControlManager.SetPlayButtonToPlayIcon(PlayPauseButton);
             
             // 启动计时器
             if (_progressTimer != null)
@@ -217,8 +270,50 @@ namespace Player.Middle
                 rootElement.MouseLeave -= OnControlsMouseLeave;
             }
             
-            // 断开MediaPlayer引用 - 注意：这里不能赋值为null，因为属性可能不允许null值
-                // MediaPlayer = null;  // 注释掉这行，避免null赋值警告
+            // 清理MediaPlayer事件订阅
+            if (_mediaPlayer != null)
+            {
+                _mediaPlayer.Playing -= MediaPlayer_Playing;
+                _mediaPlayer.Paused -= MediaPlayer_Paused;
+                _mediaPlayer.Stopped -= MediaPlayer_Stopped;
+                _mediaPlayer.EndReached -= MediaPlayer_EndReached;
+            }
+        }
+        
+        // MediaPlayer事件处理程序 - 播放开始时
+        private void MediaPlayer_Playing(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                IsPlaying = true;
+            });
+        }
+        
+        // MediaPlayer事件处理程序 - 暂停时
+        private void MediaPlayer_Paused(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                IsPlaying = false;
+            });
+        }
+        
+        // MediaPlayer事件处理程序 - 停止时
+        private void MediaPlayer_Stopped(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                IsPlaying = false;
+            });
+        }
+        
+        // MediaPlayer事件处理程序 - 播放结束时
+        private void MediaPlayer_EndReached(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                IsPlaying = false;
+            });
         }
         
         /// <summary>
@@ -314,16 +409,7 @@ namespace Player.Middle
             }
         }
         
-        /// <summary>
-        /// 专门设置播放按钮为播放图标(▶)的方法
-        /// </summary>
-        private void SetPlayButtonToPlayIcon()
-        {
-            if (PlayPauseButton != null && PlayPauseButton.Content is CustomIcon icon)
-            {
-                icon.Kind = IconKind.Play; // 确保显示播放图标
-            }
-        }
+
 
         private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -331,18 +417,27 @@ namespace Player.Middle
             {
                 try
                 {
-                    // 基于实际播放状态进行操作，然后更新UI状态
+                    // 修复问题3：视频播放完后无法重新播放的问题
+                    // 检查是否播放完毕（进度接近100%）
+                    bool isAtEnd = false;
+                    if (MediaPlayer.Length > 0)
+                    {
+                        double progress = (double)MediaPlayer.Time / MediaPlayer.Length;
+                        isAtEnd = progress >= 0.99; // 进度超过99%视为播放完毕
+                    }
+                    
                     if (IsPlaying)
                     {
                         MediaPlayer.Pause();
-                        // 根据实际操作更新状态
-                        IsPlaying = false;
                     }
                     else
                     {
+                        // 如果已经播放完毕，重置到开始位置
+                        if (isAtEnd)
+                        {
+                            MediaPlayer.Time = 0;
+                        }
                         MediaPlayer.Play();
-                        // 根据实际操作更新状态
-                        IsPlaying = true;
                     }
                 }
                 catch (Exception ex)
@@ -352,57 +447,49 @@ namespace Player.Middle
             }
         }
 
-        public void UpdatePlayIcon(bool playing)
-        {
-            if (PlayPauseButton == null) return;
-            
-            var icon = PlayPauseButton.Content as CustomIcon;
-            if (icon != null)
-            {
-                icon.Kind = playing ? IconKind.Pause : IconKind.Play;
-            }
-        }
+
 
         private void MuteButton_Click(object sender, RoutedEventArgs e)
-        {
+        {            
             if (MediaPlayer != null && VolumeSlider != null)
-            {
+            {                
                 // 切换静音状态
-                isMuted = !isMuted;
+                _playbackState.IsMuted = !_playbackState.IsMuted;
                 
-                if (isMuted)
+                if (_playbackState.IsMuted)
                 {
                     // 静音时保存当前音量
-                    volumeBeforeMute = VolumeSlider.Value;
+                    _playbackState.VolumeBeforeMute = (int)VolumeSlider.Value;
                     MediaPlayer.Volume = 0;
                     VolumeSlider.Value = 0;
                 }
                 else
                 {
                     // 取消静音时恢复之前的音量
-                    MediaPlayer.Volume = (int)volumeBeforeMute;
-                    VolumeSlider.Value = volumeBeforeMute;
+                    MediaPlayer.Volume = _playbackState.VolumeBeforeMute;
+                    VolumeSlider.Value = _playbackState.VolumeBeforeMute;
                 }
                 
                 // 更新静音图标
-                UpdateVolumeIcon(isMuted ? 0 : volumeBeforeMute);
+                UpdateVolumeIcon(_playbackState.IsMuted ? 0 : _playbackState.VolumeBeforeMute);
             }
         }
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
+        {            
             if (MediaPlayer != null && VolumeSlider != null)
-            {
+            {                
                 double newVolume = e.NewValue;
                 
                 // 如果用户手动调整音量，取消静音状态
-                if (isMuted && newVolume > 0)
+                if (_playbackState.IsMuted && newVolume > 0)
                 {
-                    isMuted = false;
+                    _playbackState.IsMuted = false;
                 }
                 
                 // 更新媒体播放器的音量
                 MediaPlayer.Volume = (int)newVolume;
+                _playbackState.Volume = (int)newVolume;
                 
                 // 更新音量图标
                 UpdateVolumeIcon(newVolume);
@@ -440,26 +527,33 @@ namespace Player.Middle
                 try
                 {
                     double progress = e.NewValue / 100;
+                    // 确保进度值在有效范围内
+                    if (progress < 0) progress = 0;
+                    if (progress > 1) progress = 1;
+                    
                     long newPosition = (long)(progress * MediaPlayer.Length);
                     MediaPlayer.Time = newPosition;
                     
                     // 更新时间显示
-                    TimeDisplay.Text = $"{FormatTime(newPosition)} / {FormatTime(MediaPlayer.Length)}";
+                    if (TimeDisplay != null)
+                    {
+                        TimeDisplay.Text = $"{FormatTime(newPosition)} / {FormatTime(MediaPlayer.Length)}";
+                    }
                 }
-                catch (Exception)
-            {
-                // 捕获可能的异常 - 移除未使用的变量
-            }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"进度设置失败: {ex.Message}");
+                }
             }
         }
 
         private void ProgressBar_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
+        {            
             // 记录拖动前的播放状态
-            _wasPlayingBeforeDrag = isPlaying;
+            _wasPlayingBeforeDrag = _playbackState.IsPlaying;
             // 拖动时暂停播放
-            if (MediaPlayer != null && isPlaying)
-            {
+            if (MediaPlayer != null && _playbackState.IsPlaying)
+            {                
                 MediaPlayer.Pause();
             }
             _isUserDragging = true;
@@ -468,10 +562,25 @@ namespace Player.Middle
         private void ProgressBar_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             _isUserDragging = false;
-            // 如果拖动前正在播放，则恢复播放
-            if (MediaPlayer != null && _wasPlayingBeforeDrag)
+            
+            // 修复问题3：视频播放完后拖动进度条无法重新播放的问题
+            if (MediaPlayer != null)
             {
-                MediaPlayer.Play();
+                try
+                {
+                    // 只有在拖动前正在播放，或者视频已播放完毕时，才自动恢复播放
+                    bool shouldResumePlayback = _wasPlayingBeforeDrag || 
+                                               (MediaPlayer.Time < MediaPlayer.Length - 1000 && !_playbackState.IsPlaying);
+                    
+                    if (shouldResumePlayback && !MediaPlayer.IsPlaying)
+                    {
+                        MediaPlayer.Play();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"恢复播放失败: {ex.Message}");
+                }
             }
         }
 

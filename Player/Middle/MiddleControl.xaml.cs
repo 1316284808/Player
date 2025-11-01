@@ -32,9 +32,9 @@ namespace Player.Middle
         // VLC播放器相关字段
         private LibVLC _libVlc;
         public MediaPlayer _mediaPlayer;
-        private string _currentVideoPath;
-        private long _currentPlaybackTime;
-        private bool _wasPlaying;
+        
+        // 播放状态管理 - 使用PlaybackState实体类
+        private PlaybackState _playbackState = new PlaybackState();
         
         // 全屏相关字段
         private bool _isVideoFullscreen = false;
@@ -363,8 +363,8 @@ namespace Player.Middle
         /// <param name="isPlaying">是否正在播放</param>
         public void UpdatePlaybackState(long playbackTime, bool isPlaying)
         {
-            _currentPlaybackTime = playbackTime;
-            _wasPlaying = isPlaying;
+            _playbackState.UpdatePlaybackTime(playbackTime);
+            _playbackState.UpdatePlaybackStatus(isPlaying);
         }
         
         /// <summary>
@@ -373,13 +373,15 @@ namespace Player.Middle
         /// <returns>播放状态对象</returns>
         public PlaybackState GetCurrentPlaybackState()
         {
-            return new PlaybackState
+            // 更新当前播放状态
+            if (_mediaPlayer != null)
             {
-                PlaybackTime = _mediaPlayer?.Time ?? 0,
-                IsPlaying = _mediaPlayer?.IsPlaying ?? false,
-                MediaPath = _currentVideoPath,
-                TotalDuration = _mediaPlayer?.Length ?? 0
-            };
+                _playbackState.UpdatePlaybackTime(_mediaPlayer.Time);
+                _playbackState.UpdatePlaybackStatus(_mediaPlayer.IsPlaying);
+                _playbackState.UpdateMediaInfo(_mediaPlayer.Length);
+            }
+            
+            return _playbackState.Clone();
         }
         
         /// <summary>
@@ -390,14 +392,28 @@ namespace Player.Middle
         {
             if (playbackState == null || _mediaPlayer == null) return;
             
-            _currentPlaybackTime = playbackState.PlaybackTime;
-            _wasPlaying = playbackState.IsPlaying;
+            // 更新播放状态
+            _playbackState = playbackState.Clone();
             
             // 如果提供了媒体路径且与当前不同，则加载新媒体
-            if (!string.IsNullOrEmpty(playbackState.MediaPath) && playbackState.MediaPath != _currentVideoPath)
+            if (!string.IsNullOrEmpty(playbackState.MediaPath) && playbackState.MediaPath != _playbackState.MediaPath)
             {
-                _currentVideoPath = playbackState.MediaPath;
-                // 这里可以添加加载媒体的逻辑
+                PlayMedia(playbackState.MediaPath);
+            }
+            
+            // 设置播放器状态
+            _mediaPlayer.Time = playbackState.PlaybackTime;
+            _mediaPlayer.Volume = playbackState.Volume;
+            _mediaPlayer.SetRate(playbackState.PlaybackRate);
+            
+            // 设置播放状态
+            if (playbackState.IsPlaying)
+            {
+                _mediaPlayer.Play();
+            }
+            else
+            {
+                _mediaPlayer.Pause();
             }
         }
 
@@ -531,9 +547,16 @@ namespace Player.Middle
         {
             if (_mediaPlayer?.Media != null)
             {
-                _currentVideoPath = _mediaPlayer.Media.Mrl;
-                _currentPlaybackTime = _mediaPlayer.Time;
-                _wasPlaying = _mediaPlayer.IsPlaying;
+                // 使用PlaybackState实体类保存播放状态
+                _playbackState.MediaPath = _mediaPlayer.Media.Mrl;
+                _playbackState.UpdatePlaybackTime(_mediaPlayer.Time);
+                _playbackState.UpdatePlaybackStatus(_mediaPlayer.IsPlaying);
+                _playbackState.UpdateMediaInfo(_mediaPlayer.Length);
+                
+                // 保存音量状态
+                _playbackState.Volume = _mediaPlayer.Volume;
+                _playbackState.PlaybackRate = _mediaPlayer.Rate;
+                
                 // 播放状态保存为内部操作，无需通知用户
             }
         }
@@ -608,8 +631,12 @@ namespace Player.Middle
                 // 6. 替换UI
                 PlayerHost.Content = videoViewControl;
 
-                // 6. 保存当前播放路径
-                _currentVideoPath = filePath;
+                // 6. 保存当前播放路径到播放状态
+                _playbackState.MediaPath = filePath;
+                _playbackState.LastPlayedTime = DateTime.Now;
+                _playbackState.PlayCount++;
+                _playbackState.LastPlayedTime = DateTime.Now;
+                _playbackState.PlayCount++;
                 
                 // 7. 播放
                 var media = new Media(_libVlc, new Uri(filePath));
@@ -651,7 +678,7 @@ namespace Player.Middle
                 }
                 else
                 {
-                    // 如果已经播放完毕，重置到开始位置
+                    // 修复问题3：如果已经播放完毕，重置到开始位置
                     if (isAtEnd)
                     {
                         _mediaPlayer.Time = 0;
@@ -663,8 +690,15 @@ namespace Player.Middle
                 if (window?.DataContext is Player.ViewModel.PlayerViewModel viewModel)
                 {
                     viewModel.IsPlaying = _mediaPlayer.IsPlaying;
+                    viewModel.PlaybackState.UpdatePlaybackStatus(_mediaPlayer.IsPlaying);
                     viewModel.IsUserInitiated = true;
                 }
+                
+                        // 更新UI播放状态
+                UpdatePlaybackStateToUI(_mediaPlayer.IsPlaying);
+                
+                // 更新PlaybackState
+                _playbackState.UpdatePlaybackStatus(_mediaPlayer.IsPlaying);
             }
         }
 
@@ -676,11 +710,16 @@ namespace Player.Middle
                 // 确保音量在0-100范围内
                 volume = Math.Max(0, Math.Min(100, volume));
                 _mediaPlayer.Volume = volume;
+                
+                // 更新PlaybackState中的音量
+                _playbackState.Volume = volume;
 
                 // 更新IsUserInitiated
                 var window = Window.GetWindow(this);
                 if (window?.DataContext is Player.ViewModel.PlayerViewModel viewModel)
                 {
+                    viewModel.Volume = volume;
+                    viewModel.PlaybackState.Volume = volume;
                     viewModel.IsUserInitiated = true;
                 }
             }
@@ -708,11 +747,15 @@ namespace Player.Middle
             if (_mediaPlayer != null)
             {
                 _mediaPlayer.SetRate(rate);
+                
+                // 更新PlaybackState中的播放速度
+                _playbackState.PlaybackRate = rate;
 
                 // 更新IsUserInitiated
                 var window = Window.GetWindow(this);
                 if (window?.DataContext is Player.ViewModel.PlayerViewModel viewModel)
                 {
+                    viewModel.PlaybackState.PlaybackRate = rate;
                     viewModel.IsUserInitiated = true;
                 }
             }
@@ -749,7 +792,7 @@ namespace Player.Middle
         // 提供当前播放的视频路径
         public string CurrentVideoPath
         {
-            get { return _currentVideoPath; }
+            get { return _playbackState.MediaPath; }
         }
         
         // 方案5：监听大小变更，重置MediaPlayer（终极手段）
@@ -858,7 +901,7 @@ namespace Player.Middle
             try
             {
                 // 检查是否有媒体在播放
-                if (string.IsNullOrEmpty(_currentVideoPath) || _mediaPlayer == null || _libVlc == null)
+                if (string.IsNullOrEmpty(_playbackState.MediaPath) || _mediaPlayer == null || _libVlc == null)
                 {
                     SystemNotificationHelper.ShowWarning ("没有可播放的媒体，无法进入全屏");
                     return;
@@ -872,7 +915,7 @@ namespace Player.Middle
                 // 全屏窗口会处理播放状态的恢复
                 
                 // 创建全屏窗口
-                _fullscreenWindow = new FullscreenWindow(this, _currentVideoPath, playbackTime, wasPlaying, _libVlc);
+                _fullscreenWindow = new FullscreenWindow(this, _playbackState.MediaPath, playbackTime, wasPlaying, _libVlc);
                 
                 // 设置全屏标志
                 _isVideoFullscreen = true;
@@ -943,11 +986,11 @@ namespace Player.Middle
         /// </summary>
         internal void RestorePlaybackAfterFullscreen()
         {
-            if (!string.IsNullOrEmpty(_currentVideoPath) && _libVlc != null)
+            if (!string.IsNullOrEmpty(_playbackState.MediaPath) && _libVlc != null)
             {
                 // 保存恢复前的播放状态
-                long savedTime = _currentPlaybackTime;
-                bool savedPlayingState = _wasPlaying;
+                long savedTime = _playbackState.PlaybackTime;
+                bool savedPlayingState = _playbackState.IsPlaying;
                 
                 // 重新创建MediaPlayer实例，因为全屏窗口使用了独立的MediaPlayer
                 DisposeMediaPlayer();
@@ -969,7 +1012,7 @@ namespace Player.Middle
                 PlayerHost.Content = videoViewControl;
                 
                 // 重新加载视频
-                var media = new Media(_libVlc, new Uri(_currentVideoPath));
+                var media = new Media(_libVlc, new Uri(_playbackState.MediaPath));
                 _mediaPlayer.Play(media);
                 
                 // 延迟设置精确的播放位置，确保媒体已加载
@@ -1103,7 +1146,8 @@ namespace Player.Middle
                     var bottomControl = VisualTreeHelperExtensions.FindVisualChild<Player.Bottom.BottomControl>(mainWindow);
                     if (bottomControl != null)
                     {
-                        bottomControl.UpdatePlayIcon(isPlaying);
+                        // 使用UIControlManager更新图标
+                        UIControlManager.UpdatePlayIcon(bottomControl.PlayPauseButtonControl, isPlaying);
                     }
                 }
             }

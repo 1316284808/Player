@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿using System;
+﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,8 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Player.ViewModel;
 using Player.Helpers;
+using Player.ViewModel;
 using Player.Core.Models;
 using Player.Core.Enums;
 
@@ -279,10 +279,15 @@ namespace Player.Left
                 var mainWindow = Application.Current.MainWindow as MainWindow;
                 if (mainWindow != null)
                 {
+                    // 播放新的媒体文件
                     mainWindow.PlayMediaFile(selectedItem.Path);
                     
-                    // 更新播放/暂停按钮的icon为实际播放状态
-                    UpdatePlayPauseButtonIcon();
+                    // 使用Dispatcher.BeginInvoke延迟更新图标，确保播放状态已更新
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        // 更新播放/暂停按钮的icon为实际播放状态
+                        UpdatePlayPauseButtonIcon();
+                    }), System.Windows.Threading.DispatcherPriority.Background);
                 }
             }
         }
@@ -298,31 +303,16 @@ namespace Player.Left
                 // 查找MiddleControl获取实际播放状态
                 var middleControl = VisualTreeHelperExtensions.FindVisualChild<Player.Middle.MiddleControl>(mainWindow);
                 
-                // 只有在MiddleControl已初始化且有明确播放状态时才更新
-                if (middleControl != null && middleControl._mediaPlayer != null)
+                // 查找BottomControl中的播放/暂停按钮
+                var bottomControl = VisualTreeHelperExtensions.FindVisualChild<Bottom.BottomControl>(mainWindow);
+                
+                if (middleControl != null && bottomControl != null)
                 {
                     bool isPlaying = middleControl.IsPlaying;
-                   
-                    // 查找BottomControl中的播放/暂停按钮
-                    var bottomControl = VisualTreeHelperExtensions.FindVisualChild<Bottom.BottomControl>(mainWindow);
-                    if (bottomControl != null)
-                    {
-                         // 调用BottomControl的更新方法
-                        bottomControl.UpdatePlayIcon(isPlaying);
-                    }
-                    else
-                    {
-                      
-                    }
+                    
+                    // 直接使用UIControlManager更新图标
+                    UIControlManager.UpdatePlayIcon(bottomControl.PlayPauseButtonControl, isPlaying);
                 }
-                else
-                {
-                   
-                }
-            }
-            else
-            {
-              
             }
         }
 

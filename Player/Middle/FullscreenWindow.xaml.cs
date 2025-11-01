@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using LibVLCSharp.Shared;
 using LibVLCSharp.WPF;
+using Player.Core.Models;
 
 namespace Player.Middle
 {
@@ -11,9 +12,7 @@ namespace Player.Middle
     {
         private LibVLC? _libvlc;
         private MediaPlayer? _mediaPlayer;
-        private string? _videoPath;
-        private long _playbackTime;
-        private bool _wasPlaying;
+        private PlaybackState _playbackState = new PlaybackState();
         private MiddleControl? _middleControl; // 保存对MiddleControl的引用
 
         #region 构造函数
@@ -39,9 +38,9 @@ namespace Player.Middle
             {
                 _middleControl = middleControl;
             }
-            _videoPath = videoPath;
-            _playbackTime = playbackTime;
-            _wasPlaying = wasPlaying;
+            
+            // 使用PlaybackState实体类初始化播放状态
+            _playbackState = new PlaybackState(videoPath, playbackTime, wasPlaying);
             _libvlc = libVlc ?? new LibVLC();
             
             // 设置窗口所有者
@@ -52,7 +51,7 @@ namespace Player.Middle
         private void Window_ContentRendered(object sender, EventArgs e)
         {
             // 创建并配置MediaPlayer
-            if (_mediaPlayer == null && _libvlc != null && !string.IsNullOrEmpty(_videoPath))
+            if (_mediaPlayer == null && _libvlc != null && !string.IsNullOrEmpty(_playbackState.MediaPath))
             {
                 _mediaPlayer = new MediaPlayer(_libvlc);
                 video.MediaPlayer = _mediaPlayer;
@@ -60,7 +59,7 @@ namespace Player.Middle
                 // 加载视频
                 try
                 {
-                    var media = new Media(_libvlc, new Uri(_videoPath));
+                    var media = new Media(_libvlc, new Uri(_playbackState.MediaPath));
                     _mediaPlayer.Play(media);
                 }
                 catch (Exception ex)
@@ -70,13 +69,13 @@ namespace Player.Middle
                 }
                 
                 // 设置播放位置
-                if (_playbackTime > 0)
+                if (_playbackState.PlaybackTime > 0)
                 {
-                    _mediaPlayer.Time = _playbackTime;
+                    _mediaPlayer.Time = _playbackState.PlaybackTime;
                 }
                 
                 // 恢复播放状态
-                if (!_wasPlaying)
+                if (!_playbackState.IsPlaying)
                 {
                     _mediaPlayer.Pause();
                 }
@@ -84,18 +83,11 @@ namespace Player.Middle
                 // 设置FullscreenControl的MediaPlayer和播放状态
                 if (fullscreenControl != null)
                 {
+                    // 设置MediaPlayer引用，这会自动根据MediaPlayer的实际状态更新UI
                     fullscreenControl.MediaPlayer = _mediaPlayer;
-                    fullscreenControl.IsPlaying = _wasPlaying;
                     
                     // 绑定退出全屏事件
                     fullscreenControl.ExitFullscreen += (s, args) => this.Close();
-                    
-                    // 确保按钮使用图标而不是文本
-                    if (fullscreenControl.IsPlaying)
-                    {
-                        // 直接使用fullscreenControl的UpdatePlayIcon方法更新图标，而不是修改Content
-                        fullscreenControl.UpdatePlayIcon(true);
-                    }
                 }
             }
         }
@@ -171,32 +163,65 @@ namespace Player.Middle
         
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            // 获取当前播放状态
-            long currentPlaybackTime = 0;
-            bool isPlaying = false;
+            // 首先确保清理FullscreenControl中的MediaPlayer引用和事件订阅
+            if (fullscreenControl != null)
+            {
+                // 先移除MediaPlayer的引用，这会触发属性setter中的事件清理
+                fullscreenControl.MediaPlayer = null;
+            }
             
+            // 获取当前播放状态并更新PlaybackState实体类
             if (_mediaPlayer != null)
             {
-                currentPlaybackTime = _mediaPlayer.Time;
-                isPlaying = _mediaPlayer.IsPlaying;
+                try
+                {
+                    // 尝试获取播放状态，但添加try-catch以防对象已部分无效
+                    _playbackState.UpdatePlaybackTime(_mediaPlayer.Time);
+                    _playbackState.UpdatePlaybackStatus(_mediaPlayer.IsPlaying);
+                    _playbackState.UpdateMediaInfo(_mediaPlayer.Length);
+                }
+                catch (AccessViolationException)
+                {
+                    // 忽略访问冲突异常，使用默认值
+                    _playbackState.Reset();
+                }
+                catch (Exception)
+                {
+                    // 忽略其他异常
+                }
                 
-                // 清理资源
-                _mediaPlayer.Stop();
-                _mediaPlayer.Dispose();
-                _mediaPlayer = null;
+                try
+                {
+                    // 安全地停止和释放MediaPlayer
+                    _mediaPlayer.Stop();
+                    _mediaPlayer.Dispose();
+                    _mediaPlayer = null;
+                }
+                catch (Exception)
+                {
+                    // 忽略释放过程中的异常
+                }
             }
             
             // 将最新的播放状态直接传递给MiddleControl
             if (_middleControl != null)
             {
-                _middleControl.UpdatePlaybackState(currentPlaybackTime, isPlaying);
+                try
+                {
+                    // 使用PlaybackState实体类传递完整的播放状态
+                    _middleControl.SetPlaybackState(_playbackState);
+                }
+                catch (Exception)
+                {
+                    // 忽略传递状态时的异常
+                }
             }
-            
-            // 调用基类方法
-            base.OnClosing(e);
             
             // 清理事件订阅
             this.KeyDown -= FullscreenWindow_KeyDown;
+            
+            // 调用基类方法
+            base.OnClosing(e);
             
             // 注意：这里不释放_libvlc，因为它可能在主窗口中被复用
         }
