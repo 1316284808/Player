@@ -3,12 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Player"
              xmlns:helpers="clr-namespace:Player.Helpers"
+             xmlns:services="clr-namespace:Player.Services"
              StartupUri="MainWindow.xaml">
     <Application.Resources> 
         <ResourceDictionary>
+            <!-- 已移除ViewModelLocator，使用依赖注入容器 -->
+            
             <ResourceDictionary.MergedDictionaries>
                 <!-- 自定义样式：仅加载样式，不加载静态主题 -->
                 <ResourceDictionary Source="Themes/CustomStyles.xaml"/>
+                <!-- SettingsDialog 样式 -->
+                <ResourceDictionary Source="Themes/SettingsDialogStyles.xaml"/>
                 <!-- 动态主题将在 App.xaml.cs 中加载 -->
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

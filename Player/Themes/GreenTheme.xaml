@@ -31,19 +31,19 @@
     <SolidColorBrush x:Key="BackgroundLightBrush" Color="#F8F8F8"/>
     
     <!-- 按钮样式 -->
-    <Style x:Key="ThemeButton" TargetType="Button" BasedOn="{StaticResource CustomRaisedButton}"/>
+    <Style x:Key="ThemeButton" TargetType="Button" BasedOn="{StaticResource PlayerMainButton}"/>
     
     <!-- 图标按钮样式 -->
-    <Style x:Key="ThemeIconButton" TargetType="Button" BasedOn="{StaticResource CustomIconButton}"/>
+    <Style x:Key="ThemeIconButton" TargetType="Button" BasedOn="{StaticResource PlayerIconButton}"/>
     
     <!-- 滑块样式 -->
-    <Style x:Key="ThemeSlider" TargetType="Slider" BasedOn="{StaticResource CustomSlider}"/>
+    <Style x:Key="ThemeSlider" TargetType="Slider" BasedOn="{StaticResource PlayerSlider}"/>
     
     <!-- 下拉列表样式 -->
-    <Style x:Key="ThemeComboBox" TargetType="ComboBox" BasedOn="{StaticResource CustomComboBox}"/>
+    <Style x:Key="ThemeComboBox" TargetType="ComboBox" BasedOn="{StaticResource PlayerComboBox}"/>
     
     <!-- 切换按钮样式 -->
-    <Style x:Key="ThemeToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource CustomToggleButton}"/>
+    <Style x:Key="ThemeToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource PlayerIconButton}"/>
     
     <!-- ListBox项目选中样式 -->
     <SolidColorBrush x:Key="ListBoxItemSelectedBackground" Color="{StaticResource SecondaryColor}"/>

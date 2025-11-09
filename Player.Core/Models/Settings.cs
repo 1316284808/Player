@@ -125,6 +125,11 @@ namespace Player.Core.Models
         public bool EnableGPUAcceleration { get; set; } = false;
 
         /// <summary>
+        /// 硬件解码器选择
+        /// </summary>
+        public string HardwareDecoder { get; set; } = "d3d11va";
+
+        /// <summary>
         /// 超分辨率是否启用（默认关闭）
         /// </summary>
         public bool EnableSuperResolution { get; set; } = false;
@@ -172,12 +177,12 @@ namespace Player.Core.Models
         /// <summary>
         /// 文件缓存时间（毫秒）
         /// </summary>
-        public int FileCaching { get; set; } = 300;
+        public int FileCaching { get; set; } = 1000;
 
         /// <summary>
         /// 网络缓存时间（毫秒）
         /// </summary>
-        public int NetworkCaching { get; set; } = 300;
+        public int NetworkCaching { get; set; } = 2000;
 
         /// <summary>
         /// 使用自动线程数

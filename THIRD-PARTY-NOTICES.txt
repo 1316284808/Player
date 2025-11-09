@@ -30,6 +30,72 @@
    - 协议全文：https://opensource.org/licenses/MIT
    - 致敬与鸣谢：感谢 Philipp Sumi 开发的高质量通知图标库，为 WPF 应用提供了优雅、易用的系统托盘集成方案。
 
+5. CommunityToolkit.Mvvm
+   - 作者/维护者：Microsoft .NET 团队
+   - 项目地址：https://github.com/CommunityToolkit/dotnet
+   - 许可协议：MIT License
+   - 协议全文：https://opensource.org/licenses/MIT
+   - 致敬与鸣谢：感谢 Microsoft .NET 团队提供的 MVVM 工具包，大大简化了 WPF 应用中 MVVM 模式的实现，提高了开发效率。
+
+6. Microsoft.Extensions.DependencyInjection
+   - 作者/维护者：Microsoft .NET 团队
+   - 项目地址：https://github.com/dotnet/runtime
+   - 许可协议：MIT License
+   - 协议全文：https://opensource.org/licenses/MIT
+   - 致敬与鸣谢：感谢 Microsoft 提供的依赖注入框架，使得应用程序组件间的解耦和测试更加容易，提高了代码的可维护性。
+
 本程序主体部分版权归 [开发者名称/组织] 所有，遵循 GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later) 许可。
 
 再次感谢所有开源贡献者的辛勤工作和无私分享！
+
+---
+
+Third-Party Open Source Libraries Notice
+
+This application uses the following open-source libraries, each of which is used in accordance with its original open-source license. We express our sincere gratitude and respect to the developers of these excellent libraries!
+
+1. LibVLCSharp
+   - Author/Maintainer: VideoLAN Team
+   - Project URL: https://github.com/videolan/libvlcsharp
+   - License: GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later)
+   - License text: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+   - Acknowledgments: We thank the VideoLAN team for developing and maintaining such a powerful media playback library, providing a solid foundation for cross-platform media application development.
+
+2. LibVLCSharp.WPF
+   - Author/Maintainer: VideoLAN Team
+   - Project URL: https://github.com/videolan/libvlcsharp
+   - License: GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later)
+   - License text: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+   - Acknowledgments: We extend our highest respect to the VideoLAN team for perfectly integrating LibVLC functionality into WPF applications, greatly simplifying the development difficulty of media applications.
+
+3. VideoLAN.LibVLC.Windows
+   - Author/Maintainer: VideoLAN Team
+   - Project URL: https://code.videolan.org/videolan/libvlc
+   - License: GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later)
+   - License text: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+   - Acknowledgments: We sincerely thank the VideoLAN team for their years of continuous maintenance and improvement of the VLC media player core engine, making it an industry-leading open-source media framework.
+
+4. Hardcodet.NotifyIcon.Wpf
+   - Author/Maintainer: Philipp Sumi
+   - Project URL: https://github.com/hardcodet/wpf-notifyicon
+   - License: MIT License
+   - License text: https://opensource.org/licenses/MIT
+   - Acknowledgments: We thank Philipp Sumi for developing the high-quality notification icon library, providing an elegant and easy-to-use system tray integration solution for WPF applications.
+
+5. CommunityToolkit.Mvvm
+   - Author/Maintainer: Microsoft .NET Team
+   - Project URL: https://github.com/CommunityToolkit/dotnet
+   - License: MIT License
+   - License text: https://opensource.org/licenses/MIT
+   - Acknowledgments: We thank the Microsoft .NET team for providing the MVVM toolkit, which greatly simplifies the implementation of the MVVM pattern in WPF applications and improves development efficiency.
+
+6. Microsoft.Extensions.DependencyInjection
+   - Author/Maintainer: Microsoft .NET Team
+   - Project URL: https://github.com/dotnet/runtime
+   - License: MIT License
+   - License text: https://opensource.org/licenses/MIT
+   - Acknowledgments: We thank Microsoft for providing the dependency injection framework, which makes it easier to decouple and test application components, improving code maintainability.
+
+The main part of this program is copyrighted by [Developer Name/Organization] and is licensed under the GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later).
+
+Once again, thank you to all open-source contributors for their hard work and selfless sharing!

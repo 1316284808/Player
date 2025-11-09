@@ -14,22 +14,26 @@ namespace Player
         {
             base.OnStartup(e);
             
-            // 加载所有配置
-            ConfigManager.LoadAllConfigs();
+            // 初始化配置 - 无需预先加载所有配置，因为需要时会单独加载
             
             // 初始化系统通知
             SystemNotificationHelper.Initialize();
             
+            // 初始化依赖注入容器（替代原有的ServiceLocator和ViewModelLocator）
+            var serviceProvider = Services.DependencyInjectionService.Initialize();
+            
             // 加载并应用保存的主题色
-            var theme = ConfigManager.LoadTheme();
-            if (!string.IsNullOrEmpty(theme.PrimaryColor))
+            var theme = LoadConfigManager.LoadTheme();
+            var themeService = Services.DependencyInjectionService.GetService<Player.Services.IThemeService>();
+            
+            if (themeService != null && !string.IsNullOrEmpty(theme.PrimaryColor) && themeService.IsValidColor(theme.PrimaryColor))
             {
-                ThemeManager.ApplyTheme(theme.PrimaryColor);
+                themeService.ApplyTheme(theme.PrimaryColor);
             }
-            else
+            else if (themeService != null)
             {
                 // 应用默认紫色主题
-                ThemeManager.ApplyTheme("#7B68EE");
+                themeService.ApplyTheme("#7B68EE");
             }
             
             // 主窗口将通过App.xaml中的StartupUri自动创建和显示
