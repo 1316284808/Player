@@ -1,0 +1,18 @@
+{
+    "EnableGPUAcceleration": false,
+    "EnableSuperResolution": false,
+    "SuperResolutionLevel": 2,
+    "VideoRenderer": "direct3d11",
+    "UseSystemMemory": true,
+    "EnableHardwareYUV": true,
+    "SkipLoopFilter": true,
+    "EnableFastDecoding": true,
+    "NoDropLateFrames": true,
+    "NoSkipFrames": true,
+    "FileCaching": 300,
+    "NetworkCaching": 300,
+    "AutoThreads": true,
+    "EnableHurryUpDecoding": true,
+    "EnableDeinterlace": true,
+    "DeinterlaceMode": "blend"
+}

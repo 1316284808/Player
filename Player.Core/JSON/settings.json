@@ -1,0 +1,14 @@
+{
+  "MaxHistoryItems": 50,
+  "AutoPlayNext": true,
+  "RememberPosition": true,
+  "ShowSubtitles": true,
+  "DefaultVolume": 80,
+  "EnableHardwareDecoding": true,
+  "ProxyEnabled": false,
+  "ProxyServer": "",
+  "ProxyPort": 0,
+  "ProxyUsername": "",
+  "ProxyPassword": "",
+  "IsMuted": false
+}

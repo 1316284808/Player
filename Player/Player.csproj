@@ -8,7 +8,7 @@
     <!-- WPF应用配置 -->
   <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
-    <ApplicationIcon>JSON\1q0yz-olmzi-001.ico</ApplicationIcon>
+    <ApplicationIcon>1q0yz-olmzi-001.ico</ApplicationIcon>
     <PackageIcon>a4mbd-h9wgx.png</PackageIcon>
   </PropertyGroup>
 
@@ -20,50 +20,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- JSON配置文件：复制到输出目录 -->
-    <None Include="JSON\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
+    <!-- JSON配置文件已移动到Player.Core项目中 -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Helpers\ColorPickerDialog.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="a4mbd-h9wgx.png" />
-    <None Remove="JSON\a4mbd-h9wgx.png" />
-    <None Remove="JSON\hardware_settings.json" />
-    <None Remove="JSON\history.json" />
-    <None Remove="JSON\theme.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <DesignData Include="JSON\1q0yz-olmzi-001.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </DesignData>
-    <DesignData Include="JSON\a4mbd-h9wgx.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </DesignData>
+    <Page Remove="Helpers\ColorPickerDialog.xaml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="JSON\hardware_settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="JSON\history.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="JSON\theme.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
+
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="LibVLCSharp" Version="3.9.4" />
     <PackageReference Include="LibVLCSharp.Wpf" Version="3.9.4" />
-    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
-    <!-- 添加用于系统通知的包 -->
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" /> 
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +53,10 @@
 
   <ItemGroup>
     <Resource Include="a4mbd-h9wgx.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Error_notebook\" />
   </ItemGroup>
 
 </Project>

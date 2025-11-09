@@ -4,42 +4,79 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Player.Middle"
+             xmlns:viewModels="clr-namespace:Player.ViewModels"
+             xmlns:helpers="clr-namespace:Player.Helpers"
+             xmlns:behaviors="clr-namespace:Player.Behaviors"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+             xmlns:bottom="clr-namespace:Player.Bottom"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             Width="auto"
+             Height="auto"
+             d:DataContext="{d:DesignInstance Type=viewModels:MiddleViewModel, IsDesignTimeCreatable=True}">
+        <UserControl.Resources>
+            <local:TimeSpanToSliderValueConverter x:Key="TimeSpanToSliderValueConverter"/>
+            <local:BoolToPlayPauseIconConverter x:Key="BoolToPlayPauseIconConverter"/>
+            <local:VolumeConverter x:Key="VolumeConverter"/>
+            <local:BoolToFullscreenIconConverter x:Key="BoolToFullscreenIconConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            
+            <!-- 全屏布局转换器 -->
+            <local:BoolToCornerRadiusConverter x:Key="BoolToCornerRadiusConverter"/>
+            <local:BoolToPaddingConverter x:Key="BoolToPaddingConverter"/>
+            <local:BoolToMarginConverter x:Key="BoolToMarginConverter"/>
+            <local:BoolToBlurRadiusConverter x:Key="BoolToBlurRadiusConverter"/>
+            <local:BoolToBorderThicknessConverter x:Key="BoolToBorderThicknessConverter"/>
+        </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions >
             <RowDefinition Height="*"></RowDefinition>
             
         </Grid.RowDefinitions>
-        <Border CornerRadius="8"   
-     Background="Black"
-     
-     Margin="10" Opacity="0.95"
-     ClipToBounds="True">
+        <Border x:Name="OuterBorder" CornerRadius="{Binding OuterBorderCornerRadius}"  
+                Grid.Row="0"  Background="black" 
+                Padding="{Binding OuterBorderPadding}"
+                Margin="{Binding OuterBorderMargin}"
+                Opacity="{Binding OuterBorderOpacity}"
+                ClipToBounds="True">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.1"/>
+                <DropShadowEffect BlurRadius="{Binding BlurRadius}" 
+                                  ShadowDepth="2" Color="Black" Opacity="0.1"/>
             </Border.Effect>
 
             <Grid>
-                <!-- 视频容器 - 使用ContentControl作为动态内容容器 -->
-                <Border CornerRadius="8" Background="black" Padding="0" ClipToBounds="True" 
-                BorderBrush="black" BorderThickness="2" Panel.ZIndex="1">
-                    <ContentControl x:Name="PlayerHost"
+                <!-- 视频容器 - 使用VideoView作为VLC播放器宿主 -->
+                <Border x:Name="InnerBorder" 
+                        CornerRadius="{Binding InnerBorderCornerRadius}" 
+                        Background="black" Padding="{Binding InnerBorderPadding}" ClipToBounds="True" 
+                        BorderBrush="Black" 
+                        BorderThickness="{Binding InnerBorderBorderThickness}">
+                    <vlc:VideoView x:Name="VideoPlayer"
                             Background="Black"
                             HorizontalAlignment="Stretch" 
-                            VerticalAlignment="Stretch" 
-                            TabIndex="2147483645"
-                            Panel.ZIndex="0"/>
-                </Border>
-                
-                <!-- 过渡用黑色覆盖层 - 用于尺寸变化时防止白屏 -->
-                <Border x:Name="TransitionOverlay" 
-                    Background="Black" 
-                    Visibility="Collapsed" 
-                    Panel.ZIndex="10" 
-                    CornerRadius="8" 
-                    ClipToBounds="True"/>
+                            VerticalAlignment="Stretch"
+                            MediaPlayer="{Binding MediaPlayer}"
+                            IsHitTestVisible="True">
+                        <!-- 全屏时显示的底部控制栏占位区域 -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- 视频内容区域 -->
+                            <Grid Grid.Row="0"/>
+                            
+                            <!-- 全屏时显示的底部控制栏 -->
+                            <ContentControl x:Name="BottomControlPlaceholder" Grid.Row="1" 
+                                            Content="{Binding BottomControlContent}"
+                                            VerticalAlignment="Bottom"
+                                            Width="900"
+                                            Opacity="{Binding ControlBarOpacity}"
+                                            Margin="0,0,0,10"/>
+                        </Grid>
+                    </vlc:VideoView>
+                </Border> 
             </Grid>
         </Border>
     </Grid>
