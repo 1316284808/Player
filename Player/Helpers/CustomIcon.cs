@@ -61,9 +61,12 @@ namespace Player.Helpers
                     return Geometry.Parse("M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z");
                 
                 case IconKind.Play:
-                    return Geometry.Parse("M9,6V18L17,12L9,6Z"); //三角形 ▶ 播放按钮
+                    return Geometry.Parse("M14,19H18V5H14M6,19H10V5H6V19Z");
+
                 case IconKind.Pause:
-                    return Geometry.Parse("M14,19H18V5H14M6,19H10V5H6V19Z");//两个矩形 ⏸ 暂停按钮
+                    return Geometry.Parse("M9,6V18L17,12L9,6Z");
+                 
+
                 case IconKind.VolumeHigh:
                     return Geometry.Parse("M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z");
                 

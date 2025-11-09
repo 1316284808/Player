@@ -14,7 +14,7 @@ namespace Player.Helpers
         /// <typeparam name="T">要查找的元素类型</typeparam>
         /// <param name="parent">父元素</param>
         /// <returns>找到的元素，如果未找到则返回null</returns>
-        public static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        public static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             if (parent == null) return null;
             
@@ -24,7 +24,7 @@ namespace Player.Helpers
                 if (child is T t)
                     return t;
                 
-                T childOfChild = FindVisualChild<T>(child);
+                T? childOfChild = FindVisualChild<T>(child);
                 if (childOfChild != null)
                     return childOfChild;
             }
@@ -38,7 +38,7 @@ namespace Player.Helpers
         /// <param name="parent">父元素</param>
         /// <param name="childName">子元素名称</param>
         /// <returns>找到的元素，如果未找到则返回null</returns>
-        public static T FindVisualChildByName<T>(DependencyObject parent, string childName) where T : FrameworkElement
+        public static T? FindVisualChildByName<T>(DependencyObject parent, string childName) where T : FrameworkElement
         {
             if (parent == null) return null;
             
@@ -48,7 +48,7 @@ namespace Player.Helpers
                 if (child is T t && t.Name == childName)
                     return t;
                 
-                T childOfChild = FindVisualChildByName<T>(child, childName);
+                T? childOfChild = FindVisualChildByName<T>(child, childName);
                 if (childOfChild != null)
                     return childOfChild;
             }
@@ -61,7 +61,7 @@ namespace Player.Helpers
         /// <typeparam name="T">要查找的父元素类型</typeparam>
         /// <param name="child">子元素</param>
         /// <returns>找到的父元素，如果未找到则返回null</returns>
-        public static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
+        public static T? FindVisualParent<T>(DependencyObject child) where T : DependencyObject
         {
             if (child == null) return null;
             

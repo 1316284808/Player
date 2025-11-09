@@ -11,13 +11,14 @@ namespace Player.Core.Enums
         FolderPlus,
         Play,
         Pause,
-        MotionPlay,
+        MotionPlay, 
         MotionPause,
         VolumeHigh,
         VolumeMedium,
         VolumeLow,
         VolumeMute,
         Fullscreen,
+        FullscreenExit,
         ChevronLeft,
         ChevronRight
     }

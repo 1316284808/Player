@@ -7,24 +7,42 @@
         xmlns:left="clr-namespace:Player.Left" 
         xmlns:middle="clr-namespace:Player.Middle"
         xmlns:bottom="clr-namespace:Player.Bottom"
+        xmlns:vm="clr-namespace:Player.ViewModels"
         mc:Ignorable="d"
-        Title="媒体播放器" Icon="/a4mbd-h9wgx.png"
-        Background="{DynamicResource SecondaryLightBrush}">
-    <Window.CommandBindings>
-        <CommandBinding Command="{x:Static MediaCommands.Play}" Executed="PlayPauseCommand_Executed"/>
-        <CommandBinding Command="{x:Static ApplicationCommands.Open}" Executed="OpenFile_Executed"/>
-    </Window.CommandBindings>
+        d:DataContext="{d:DesignInstance vm:MainViewModel, IsDesignTimeCreatable=True}"
+        Title="{Binding WindowTitle}" Icon="/a4mbd-h9wgx.png"
+        Background="#F5F5F5"
+        WindowState="Normal"
+        Width="1024"
+        Height="768">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <!-- 反向布尔值到可见性转换器 -->
+        <local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <!-- 全屏布局转换器 -->
+        <bottom:BoolToWindowStyleConverter x:Key="WindowStyleConverter" />
+        <bottom:BoolToLeftColumnWidthConverter x:Key="LeftColumnWidthConverter" />
+    </Window.Resources>
+    
+    <!-- 窗口样式绑定必须在资源定义之后 -->
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="WindowStyle" Value="{Binding PlaybackState.IsFullscreen, Converter={StaticResource WindowStyleConverter}}" />
+        </Style>
+    </Window.Style>
+    
+
+    
     <!-- 主Grid -->
-    <Grid AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter" Background="#F5F5F5">
+    <Grid AllowDrop="True" Background="#F5F5F5">
         <!-- 列定义：左侧固定宽度，右侧自动填充剩余空间 -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="LeftColumn" Width="Auto"/>
+            <ColumnDefinition x:Name="LeftColumn" Width="{Binding PlaybackState.IsFullscreen, Converter={StaticResource LeftColumnWidthConverter}}"/>
             <ColumnDefinition x:Name="RightColumn" Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- 左侧区域：使用left命名空间引用LeftControl -->
         <left:LeftControl x:Name="leftControl" Grid.Column="0"/>
-        <!-- 直接用left别名引用，无需额外前缀 -->
 
         <!-- 右侧区域（包含两行） -->
         <Grid Grid.Column="1">
@@ -34,10 +52,11 @@
             </Grid.RowDefinitions>
 
             <!-- 右侧第一行 -->
-            <middle:MiddleControl Grid.Row="0"/>
+            <middle:MiddleControl x:Name="middleControl" Grid.Row="0"/>
 
             <!-- 右侧第二行 -->
-            <bottom:BottomControl Grid.Row="1" />
+            <bottom:BottomControl x:Name="BottomControl" Grid.Row="1"
+                                 Visibility="{Binding PlaybackState.IsFullscreen, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
 
         </Grid>
     </Grid>

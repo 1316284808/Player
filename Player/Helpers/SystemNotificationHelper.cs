@@ -11,7 +11,7 @@ namespace Player.Helpers
     public static class SystemNotificationHelper
     {
         // 单例的任务栏通知图标
-        private static TaskbarIcon _taskbarIcon;
+        private static TaskbarIcon? _taskbarIcon;
         private static bool _initialized = false;
 
         /// <summary>
@@ -38,10 +38,10 @@ namespace Player.Helpers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // 避免递归调用
-                SystemNotificationHelper.ShowError($"初始化系统通知失败: {ex.Message}");
+                SystemNotificationHelper.ShowError("初始化系统通知失败");
             }
         }
 
