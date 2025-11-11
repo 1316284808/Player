@@ -20,6 +20,7 @@ namespace Player.Core.Enums
         Fullscreen,
         FullscreenExit,
         ChevronLeft,
-        ChevronRight
+        ChevronRight,
+        Delete
     }
 }

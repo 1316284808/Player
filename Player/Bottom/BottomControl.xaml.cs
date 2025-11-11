@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+ 
 using Player.ViewModels;
 
 namespace Player.Bottom
@@ -25,6 +26,7 @@ namespace Player.Bottom
             // 订阅Loaded和Unloaded事件以管理资源
             Loaded += BottomControl_Loaded;
             Unloaded += BottomControl_Unloaded;
+           
         }
 
         private void BottomControl_Loaded(object sender, RoutedEventArgs e)

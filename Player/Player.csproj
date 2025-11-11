@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Compile Remove="Helpers\ColorPickerDialog.xaml.cs" />
+    <Compile Remove="Helpers\CustomIcon.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="LibVLCSharp" Version="3.9.4" />
     <PackageReference Include="LibVLCSharp.Wpf" Version="3.9.4" />

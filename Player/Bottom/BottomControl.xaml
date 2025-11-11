@@ -8,8 +8,7 @@
              xmlns:viewModels="clr-namespace:Player.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-          
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
              d:DataContext="{d:DesignInstance Type=viewModels:BottomViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
              FontFamily="Segoe UI" Cursor="">
@@ -30,7 +29,8 @@
     <Border x:Name="PlayerControlsContainer" 
             Style="{StaticResource PlayerControlsContainer}"
             MouseEnter="PlayerControlsContainer_MouseEnter"
-            MouseLeave="PlayerControlsContainer_MouseLeave">
+            MouseLeave="PlayerControlsContainer_MouseLeave"
+             Padding="5" >
         <Border.RenderTransform>
             <TransformGroup>
                 <ScaleTransform/>
@@ -90,7 +90,11 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <!-- 控制按钮区域 -->
-            <Grid Grid.Row="0" VerticalAlignment="Center">
+            <Grid Grid.Row="0"  
+                Cursor="Hand"
+                  
+                    HorizontalAlignment="Stretch"   
+                 >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -107,10 +111,8 @@
                         ToolTip="播放/暂停"
                         Command="{Binding TogglePlayPauseCommand}"
                         Style="{StaticResource SpecialShapePlayButton}"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Margin="0,0,8,0">
-                    <coreHelpers:CustomIcon Kind="{Binding IsPlaying, Converter={StaticResource PlayPauseIconConverter}}"  Foreground="White"  />
+                        >
+                    <coreHelpers:CustomIcon Kind="{Binding IsPlaying, Converter={StaticResource PlayPauseIconConverter}}"  Foreground="White" IconSize="18" Cursor="" />
                 </Button>
 
                 <!-- 静音按钮 -->
@@ -120,11 +122,10 @@
                         Command="{Binding ToggleMuteCommand}"
                         Style="{StaticResource CircularIconButton}"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center" Cursor="Hand">
                     <coreHelpers:CustomIcon Kind="{Binding Volume, Converter={StaticResource VolumeToIconConverter}}" 
                                       Foreground="{DynamicResource PrimaryBrush}" 
-                                      Width="18" 
-                                      Height="18"/>
+                                      IconSize="16"/>
                 </Button>
 
                 <!-- 音量滑块（使用 Behaviors 绑定拖拽事件） -->
@@ -206,8 +207,7 @@
                         VerticalAlignment="Center">
                     <coreHelpers:CustomIcon Kind="{Binding IsFullscreen, Converter={StaticResource FullscreenIconConverter}}" 
                                       Foreground="{DynamicResource PrimaryBrush}" 
-                                      Width="20" 
-                                      Height="20"/>
+                                      IconSize="16"/>
                 </Button>
 
             </Grid>

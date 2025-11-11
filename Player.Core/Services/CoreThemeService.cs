@@ -6,7 +6,7 @@ namespace Player.Core.Services
     /// <summary>
     /// 主题服务实现 - 跨平台主题管理
     /// </summary>
-    public class CoreThemeService : IThemeService
+    public class CoreThemeService // : IThemeService (接口已移至Player.Services命名空间)
     {
         /// <summary>
         /// 主题应用事件

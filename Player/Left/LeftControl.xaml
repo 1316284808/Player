@@ -7,7 +7,7 @@
              xmlns:viewModels="clr-namespace:Player.ViewModels"
              xmlns:helpers="clr-namespace:Player.Helpers"
              xmlns:coreHelpers="clr-namespace:Player.Core.Helpers;assembly=Player.Core"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"  
              d:DesignHeight="600" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance Type=viewModels:LeftViewModel, IsDesignTimeCreatable=True}">
     
@@ -35,24 +35,24 @@
 
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="5">
                     <!-- 折叠按钮 -->
-                    <Button x:Name="CollapseButton" Margin="2" Style="{StaticResource PlayerIconButton}" 
+                    <Button x:Name="CollapseButton" Margin="0,2,0,5" Style="{StaticResource PlayerIconButton}" 
                             ToolTip="{Binding IsSidebarCollapsed, Converter={StaticResource BoolToTooltipConverter}}"
                             HorizontalAlignment="Center"
                             Command="{Binding ToggleSidebarCommand}" Cursor="Hand">
-                        <coreHelpers:CustomIcon x:Name="CollapseIcon" Kind="{Binding IsSidebarCollapsed, Converter={StaticResource BoolToIconConverter}}" Foreground="{DynamicResource PrimaryBrush}" Width="28" Height="28"/>
+                        <coreHelpers:CustomIcon x:Name="CollapseIcon" Kind="{Binding IsSidebarCollapsed, Converter={StaticResource BoolToIconConverter}}" Foreground="{DynamicResource PrimaryBrush}" IconSize="24" />
                     </Button>
                     
                     <!-- 设置按钮 -->
-                    <Button x:Name="SettingsButton" Margin="2" Style="{StaticResource PlayerIconButton}" ToolTip="设置" HorizontalAlignment="Center" Command="{Binding OpenSettingsCommand}">
-                        <coreHelpers:CustomIcon Kind="Settings" Foreground="{DynamicResource PrimaryBrush}" Width="24" Height="24"/>
+                    <Button x:Name="SettingsButton" Margin="0,2,0,5" Style="{StaticResource PlayerIconButton}" ToolTip="设置" HorizontalAlignment="Center" Command="{Binding OpenSettingsCommand}">
+                        <coreHelpers:CustomIcon Kind="Settings" Foreground="{DynamicResource PrimaryBrush}" IconSize="24"/>
                     </Button>
                 </StackPanel>
             </Border>
         </Grid>
         
         <!-- 右侧内容区域 -->
-        <Border x:Name="ContentBorder" CornerRadius="8" Grid.Column="1" Style="{StaticResource PlayerControlsContainer}"
-                Width="{Binding IsSidebarCollapsed, Converter={StaticResource BoolToWidthConverter}}" 
+        <Border x:Name="ContentBorder" CornerRadius="0,8,8,0" Grid.Column="1" Style="{StaticResource PlayerControlsContainer}"
+                Width="{Binding IsSidebarCollapsed, Converter={StaticResource BoolToWidthConverter}}"  
                 Margin="0,0,10,0"
                 HorizontalAlignment="Stretch">
             <Border.Effect>
@@ -80,7 +80,7 @@
                                           Cursor="Hand"/>
                                 <Button Margin="1" Style="{StaticResource PlayerIconButton}" Width="35" Height="35" ToolTip="添加文件夹" HorizontalAlignment="Right"
                                         Command="{Binding OpenFolderCommand}">
-                                    <coreHelpers:CustomIcon Kind="FolderPlus" Foreground="{DynamicResource PrimaryBrush}" Width="18" Height="18"/>
+                                    <coreHelpers:CustomIcon Kind="FolderPlus" Foreground="{DynamicResource PrimaryBrush}" IconSize="20"/>
                                 </Button>
                             </Grid>
                         <!-- 分隔线 -->
@@ -95,13 +95,35 @@
                             <!-- 子项模板 -->
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <!-- 使用新的ListBoxItemButton样式 -->
-                                    <Button Command="{Binding DataContext.SelectMediaCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                            CommandParameter="{Binding}"
-                                            Content="{Binding Name}"
-                                            Style="{StaticResource ListBoxItemButton}"
-                                            ToolTip="{Binding Name}">
-                                    </Button>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- 文件名按钮 -->
+                                        <Button Grid.Column="0"
+                                                Command="{Binding DataContext.SelectMediaCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                CommandParameter="{Binding}"
+                                                Content="{Binding Name}"
+                                                Style="{StaticResource ListBoxItemButton}"
+                                                ToolTip="{Binding Name}"
+                                                HorizontalAlignment="Stretch">
+                                        </Button>
+                                        
+                                        <!-- 删除按钮 -->
+                                        <Button Grid.Column="1"
+                                                Command="{Binding DataContext.DeleteHistoryItemCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource PlayerIconButton}"
+                                                Width="30" Height="30"
+                                                Margin="5,0,0,0"
+                                                ToolTip="删除历史记录"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalContentAlignment="Center">
+                                            <coreHelpers:CustomIcon Kind="Delete" Foreground="{DynamicResource PrimaryBrush}"  VerticalContentAlignment="Center"  IconSize="4"/>
+                                        </Button>
+                                    </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
@@ -133,13 +155,35 @@
                             <!-- 子项模板 -->
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <!-- 使用新的ListBoxItemButton样式 -->
-                                    <Button Command="{Binding DataContext.ShowHistoryByDateAsyncCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                            CommandParameter="{Binding}"
-                                            Content="{Binding}"
-                                            Style="{StaticResource ListBoxItemButton}"
-                                            ToolTip="{Binding}">
-                                    </Button>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- 日期按钮 -->
+                                        <Button Grid.Column="0"
+                                                Command="{Binding DataContext.ShowHistoryByDateAsyncCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                CommandParameter="{Binding}"
+                                                Content="{Binding}"
+                                                Style="{StaticResource ListBoxItemButton}"
+                                                ToolTip="{Binding}"
+                                                HorizontalAlignment="Stretch">
+                                        </Button>
+                                        
+                                        <!-- 删除按钮 -->
+                                        <Button Grid.Column="1"
+                                                Command="{Binding DataContext.DeleteHistoryDateCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource PlayerIconButton}"
+                                                Width="30" Height="30"
+                                                Margin="5,0,0,0"
+                                                ToolTip="删除该日期的所有历史记录"
+                                                 HorizontalAlignment="Stretch"
+                                                VerticalContentAlignment="Center" >
+                                            <coreHelpers:CustomIcon Kind="Delete" Foreground="{DynamicResource PrimaryBrush}" IconSize="4"/>
+                                        </Button>
+                                    </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                           </ListBox>

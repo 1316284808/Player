@@ -17,9 +17,11 @@
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="Width" Value="36"/>
-        <Setter Property="Height" Value="36"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="Height" Value="30"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -245,7 +247,7 @@
         <Setter Property="Background" Value="{DynamicResource SecondaryLightBrush}"/>
         <Setter Property="Opacity" Value="0.95"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="15,10"/>
+        <Setter Property="Padding" Value="10,15,0,0"/>
         <Setter Property="Margin" Value="10"/>
         <Setter Property="Effect">
             <Setter.Value>
@@ -254,11 +256,7 @@
         </Setter>
     </Style>
     
-    <!-- 消息通知颜色资源 -->
-    <SolidColorBrush x:Key="InfoBrush" Color="#1976D2"/>
-    <SolidColorBrush x:Key="SuccessBrush" Color="#4CAF50"/>
-    <SolidColorBrush x:Key="WarningBrush" Color="#FFC107"/>
-    <SolidColorBrush x:Key="ErrorBrush" Color="#F44336"/>
+   
     
     <!-- 阴影效果资源 -->
     <DropShadowEffect x:Key="DropShadowEffect" BlurRadius="8" ShadowDepth="2" Color="Black" Opacity="0.2"/>
@@ -394,7 +392,7 @@
                         <ContentPresenter HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         SnapsToDevicePixels="True"
-                                        Margin="-25,-25,0,0"/>
+                                        Margin="0"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <!-- 鼠标悬停 -->
@@ -647,7 +645,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
-                    <Grid Background="Transparent">
+                    <Grid Background="Transparent"  >
                         <Track x:Name="PART_Track" IsDirectionReversed="True">
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" Focusable="False"/>
@@ -721,7 +719,7 @@
         <Style.Resources>
             <Style TargetType="ScrollBar" BasedOn="{StaticResource PlayerScrollBar}"/>
             <Style TargetType="ScrollViewer">
-                <Setter Property="Padding" Value="0 0 8 0"/>
+                <Setter Property="Padding" Value="0 0 0 0"/>
             </Style>
         </Style.Resources>
     </Style>
@@ -729,7 +727,7 @@
     <!-- 12. 播放器ListBoxItem样式 -->
     <Style x:Key="PlayerListBoxItem" TargetType="ListBoxItem">
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="2 1"/>
+        <Setter Property="Margin" Value="0"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">

@@ -162,9 +162,6 @@ namespace Player.ViewModels
                             // 重新加载历史记录和播放列表
                             LoadHistoryDates();
                             
-                            // 使用消息服务发送播放列表更新消息
-                            _messengerService.Send(new PlaylistUpdatedMessage(mediaItems.ToList()));
-                            
                             // 注意：这里不自动播放第一个文件，只是更新播放列表
                             // 用户需要手动选择要播放的文件
                         }
@@ -232,8 +229,7 @@ namespace Player.ViewModels
                 if (HistoryDates.Any())
                 {
                     SelectedHistoryDate = HistoryDates.First();
-                    // 确保播放列表被正确刷新
-                    ShowHistoryByDateAsync(SelectedHistoryDate);
+                    // 注意：不需要手动调用ShowHistoryByDateAsync，因为设置SelectedHistoryDate会自动触发OnSelectedHistoryDateChanged
                 }
             }
             catch (Exception ex)
@@ -254,6 +250,79 @@ namespace Player.ViewModels
                 ShowHistoryByDateAsync(value);
             }
         }
+        
+        /// <summary>
+        /// 删除历史记录项命令
+        /// </summary>
+        [RelayCommand]
+        private async Task DeleteHistoryItem(MediaItem? item)
+        {
+            if (item != null && !string.IsNullOrEmpty(SelectedHistoryDate))
+            {
+                try
+                {
+                    if (DateTime.TryParseExact(SelectedHistoryDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var date))
+                    {
+                        // 调用MediaRepository删除历史记录项
+                        await _mediaRepository.RemoveHistoryItemAsync(date, item.Path);
+                        
+                        // 从当前显示的列表中移除该项
+                        CurrentHistoryFiles.Remove(item);
+                        
+                        // 如果当前日期没有记录了，重新加载历史日期列表
+                        if (!CurrentHistoryFiles.Any())
+                        {
+                            LoadHistoryDates();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"删除历史记录失败: {ex.Message}", "错误", 
+                        System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 删除指定日期的所有历史记录命令
+        /// </summary>
+        [RelayCommand]
+        private async Task DeleteHistoryDate(string? dateString)
+        {
+            if (!string.IsNullOrEmpty(dateString))
+            {
+                try
+                {
+                    // 确认删除
+                    var result = System.Windows.MessageBox.Show($"确定要删除 {dateString} 的所有历史记录吗？", "确认删除", 
+                        System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
+                    
+                    if (result == System.Windows.MessageBoxResult.Yes)
+                    {
+                        if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var date))
+                        {
+                            // 调用MediaRepository删除该日期的所有历史记录
+                            await _mediaRepository.ClearHistoryByDateAsync(date);
+                            
+                            // 如果删除的是当前选中的日期，清空当前文件列表
+                            if (SelectedHistoryDate == dateString)
+                            {
+                                CurrentHistoryFiles.Clear();
+                            }
+                            
+                            // 重新加载历史日期列表
+                            LoadHistoryDates();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"删除历史记录失败: {ex.Message}", "错误", 
+                        System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+        }
 
         [RelayCommand]
         private void ShowHistoryByDate (string dateString) {
@@ -269,6 +338,7 @@ namespace Player.ViewModels
         {
             try
             {
+                List<MediaItem > lisr = new List<MediaItem>();
                 if (DateTime.TryParseExact(dateString, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var date))
                 {
                     CurrentHistoryFiles.Clear();
@@ -283,10 +353,9 @@ namespace Player.ViewModels
                             foreach (var mediaItem in mediaItems)
                             {
                                 CurrentHistoryFiles.Add(mediaItem);
+                                lisr.Add(mediaItem);
                             }
-                            
-                            // 发送播放列表更新消息，通知MainViewModel更新播放列表
-                            _messengerService.Send(new PlaylistUpdatedMessage(CurrentHistoryFiles.ToList()));
+                            // 历史记录已添加到CurrentHistoryFiles中
                         });
                     });
                 }

@@ -1,17 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Text.Json;
+﻿
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
+
 using System.Windows.Threading;
 using Player.ViewModels;
-using Player.Core.Models;
-using Player.Core.Services;
-using Player.Services;
-using Player.Core.Services;
-using Player.Core.Events;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace Player.Left
 {
@@ -40,6 +33,8 @@ namespace Player.Left
             // 注册键盘快捷键和事件
             Loaded += LeftControl_Loaded;
             Unloaded += LeftControl_Unloaded;
+
+         
         }
         
         private void LeftControl_Loaded(object sender, RoutedEventArgs e)
@@ -63,20 +58,5 @@ namespace Player.Left
             }
         }
 
-        /// <summary>
-        /// 历史记录列表选择变更事件
-        /// </summary>
-        private async void HistoryListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_viewModel == null || HistoryListBox.SelectedItem == null)
-                return;
-                
-            var selectedDate = HistoryListBox.SelectedItem.ToString();
-            if (!string.IsNullOrEmpty(selectedDate))
-            {
-                // 调用ViewModel中的命令来显示历史记录
-                //await _viewModel.ShowHistoryByDateAsync(selectedDate);
-            }
-        }
     }
 }

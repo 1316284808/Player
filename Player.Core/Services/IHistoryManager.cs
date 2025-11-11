@@ -48,5 +48,12 @@ namespace Player.Core.Services
         /// 清除所有历史记录
         /// </summary>
         void ClearAllHistory();
+        
+        /// <summary>
+        /// 删除单个历史记录项
+        /// </summary>
+        /// <param name="date">历史记录日期</param>
+        /// <param name="filePath">要删除的文件路径</param>
+        void RemoveHistoryItem(DateTime date, string filePath);
     }
 }

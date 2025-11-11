@@ -11,16 +11,13 @@
              xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
              xmlns:bottom="clr-namespace:Player.Bottom"
              mc:Ignorable="d" 
-             Width="auto"
-             Height="auto"
              d:DataContext="{d:DesignInstance Type=viewModels:MiddleViewModel, IsDesignTimeCreatable=True}">
         <UserControl.Resources>
             <local:TimeSpanToSliderValueConverter x:Key="TimeSpanToSliderValueConverter"/>
-            <local:BoolToPlayPauseIconConverter x:Key="BoolToPlayPauseIconConverter"/>
+            <bottom:BoolToPlayPauseIconConverter x:Key="BoolToPlayPauseIconConverter"/>
             <local:VolumeConverter x:Key="VolumeConverter"/>
-            <local:BoolToFullscreenIconConverter x:Key="BoolToFullscreenIconConverter"/>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            
+            <bottom:BoolToFullscreenIconConverter x:Key="BoolToFullscreenIconConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/> 
             <!-- 全屏布局转换器 -->
             <local:BoolToCornerRadiusConverter x:Key="BoolToCornerRadiusConverter"/>
             <local:BoolToPaddingConverter x:Key="BoolToPaddingConverter"/>
@@ -45,18 +42,23 @@
             </Border.Effect>
 
             <Grid>
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
                 <!-- 视频容器 - 使用VideoView作为VLC播放器宿主 -->
-                <Border x:Name="InnerBorder" 
+                <Border x:Name="InnerBorder"  Grid.Row="0"
                         CornerRadius="{Binding InnerBorderCornerRadius}" 
-                        Background="black" Padding="{Binding InnerBorderPadding}" ClipToBounds="True" 
-                        BorderBrush="Black" 
-                        BorderThickness="{Binding InnerBorderBorderThickness}">
-                    <vlc:VideoView x:Name="VideoPlayer"
-                            Background="Black"
+                        Background="Transparent"  Padding="{Binding InnerBorderPadding}" ClipToBounds="True"  
+                        BorderThickness="{Binding InnerBorderBorderThickness}" >
+                    <vlc:VideoView x:Name="VideoPlayer" 
+                                      Padding="{Binding InnerBorderPadding}" ClipToBounds="True"  
+                                    BorderThickness="{Binding InnerBorderBorderThickness}" 
+                                   Width="{Binding VideoPlayerWidth}"
+                                   Height="{Binding VideoPlayerHeight}"
                             HorizontalAlignment="Stretch" 
                             VerticalAlignment="Stretch"
                             MediaPlayer="{Binding MediaPlayer}"
-                            IsHitTestVisible="True">
+                            >
                         <!-- 全屏时显示的底部控制栏占位区域 -->
                         <Grid>
                             <Grid.RowDefinitions>
@@ -65,9 +67,11 @@
                             </Grid.RowDefinitions>
                             
                             <!-- 视频内容区域 -->
-                            <Grid Grid.Row="0"/>
-                            
-                            <!-- 全屏时显示的底部控制栏 -->
+                            <Grid Grid.Row="0">
+                                
+                            </Grid>
+
+                                <!-- 全屏时显示的底部控制栏 -->
                             <ContentControl x:Name="BottomControlPlaceholder" Grid.Row="1" 
                                             Content="{Binding BottomControlContent}"
                                             VerticalAlignment="Bottom"

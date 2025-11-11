@@ -61,6 +61,21 @@ namespace Player.Core.Repositories
         Task<IEnumerable<MediaItem>> GetMediaHistoryByDateAsync(DateTime date);
         
         /// <summary>
+        /// 删除单个历史记录项
+        /// </summary>
+        /// <param name="date">历史记录日期</param>
+        /// <param name="filePath">要删除的文件路径</param>
+        /// <returns>删除任务</returns>
+        Task RemoveHistoryItemAsync(DateTime date, string filePath);
+        
+        /// <summary>
+        /// 清除指定日期的所有历史记录
+        /// </summary>
+        /// <param name="date">历史记录日期</param>
+        /// <returns>清除任务</returns>
+        Task ClearHistoryByDateAsync(DateTime date);
+        
+        /// <summary>
         /// 获取支持的媒体文件扩展名
         /// </summary>
         /// <returns>支持的扩展名列表</returns>

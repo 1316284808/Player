@@ -44,6 +44,20 @@
    - 协议全文：https://opensource.org/licenses/MIT
    - 致敬与鸣谢：感谢 Microsoft 提供的依赖注入框架，使得应用程序组件间的解耦和测试更加容易，提高了代码的可维护性。
 
+7. FontAwesome.Sharp
+   - 作者/维护者：Awesome Incremented
+   - 项目地址：https://github.com/awesome-inc/FontAwesome.Sharp
+   - 许可协议：MIT License
+   - 协议全文：https://opensource.org/licenses/MIT
+   - 致敬与鸣谢：感谢 Awesome Incremented 团队提供的 FontAwesome 图标库的 .NET 实现，为应用提供了丰富、精美的图标资源，提升了用户界面的美观度。
+
+8. Microsoft.Xaml.Behaviors.Wpf
+   - 作者/维护者：Microsoft 团队
+   - 项目地址：https://github.com/Microsoft/XamlBehaviorsWpf
+   - 许可协议：MIT License
+   - 协议全文：https://opensource.org/licenses/MIT
+   - 致敬与鸣谢：感谢 Microsoft 团队提供的 XAML Behaviors 库，使得 WPF 应用中可以使用声明式方式添加行为，简化了 UI 交互逻辑的实现。
+
 本程序主体部分版权归 [开发者名称/组织] 所有，遵循 GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later) 许可。
 
 再次感谢所有开源贡献者的辛勤工作和无私分享！
@@ -95,6 +109,20 @@ This application uses the following open-source libraries, each of which is used
    - License: MIT License
    - License text: https://opensource.org/licenses/MIT
    - Acknowledgments: We thank Microsoft for providing the dependency injection framework, which makes it easier to decouple and test application components, improving code maintainability.
+
+7. FontAwesome.Sharp
+   - Author/Maintainer: Awesome Incremented
+   - Project URL: https://github.com/awesome-inc/FontAwesome.Sharp
+   - License: MIT License
+   - License text: https://opensource.org/licenses/MIT
+   - Acknowledgments: We thank the Awesome Incremented team for providing the .NET implementation of the FontAwesome icon library, offering rich and beautiful icon resources for the application, enhancing the aesthetics of the user interface.
+
+8. Microsoft.Xaml.Behaviors.Wpf
+   - Author/Maintainer: Microsoft Team
+   - Project URL: https://github.com/Microsoft/XamlBehaviorsWpf
+   - License: MIT License
+   - License text: https://opensource.org/licenses/MIT
+   - Acknowledgments: We thank the Microsoft team for providing the XAML Behaviors library, enabling the declarative addition of behaviors in WPF applications and simplifying the implementation of UI interaction logic.
 
 The main part of this program is copyrighted by [Developer Name/Organization] and is licensed under the GNU Lesser General Public License v2.1 or later (LGPL-2.1-or-later).
 

@@ -6,9 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using LibVLCSharp.Shared;
 using Player.Core.Events;
 using Player.Core.Services;
-using System.Windows.Forms;
 using System.Windows.Threading;
-using System.Windows.Media.Animation;
 
 namespace Player.ViewModels
 {
@@ -89,6 +87,13 @@ namespace Player.ViewModels
         [ObservableProperty]
         private Thickness _bottomControlPlaceholderMargin = new Thickness(0, 0, 0, 10);
 
+        // 控制VideoView大小 - 无视频时为0，有视频时铺满父容器
+        [ObservableProperty]
+        private double _videoPlayerWidth = 0;
+
+        [ObservableProperty]
+        private double _videoPlayerHeight = 0;
+
         // 控制栏透明度管理
         [ObservableProperty]
         private double _controlBarOpacity = 1.0;  // 控制栏透明度，1.0为完全可见，0.01为几乎隐藏
@@ -136,25 +141,7 @@ namespace Player.ViewModels
             _messengerService.Register<FullscreenChangedMessage>(this, OnFullscreenChangedMessage);
         }
         
-        // 添加一个公共方法来手动播放指定文件，用于测试和直接调用
-        public void TestPlayMedia(string filePath)
-        {
-             
-            try
-            {
-                // 确保VLC已初始化
-                if (!IsVlcInitialized)
-                {
-                    InitializeVlc();
-                }
-                
-                // 直接调用LoadMedia方法
-                LoadMedia(filePath);
-            }
-            catch (Exception ex)
-            {
-                        }
-        }
+
 
         #region Speed Conversion Methods
 
@@ -267,6 +254,9 @@ namespace Player.ViewModels
                 _vlcPlayerService.LoadMedia(filePath);
                 // 更新播放状态中的媒体路径
                 PlaybackState.MediaPath = filePath;
+                // 设置VideoPlayer大小为铺满父容器
+                VideoPlayerWidth = double.NaN; // NaN表示拉伸填充
+                VideoPlayerHeight = double.NaN;
                 // 触发MediaPlayerChanged事件，通知UI更新绑定
                 OnMediaPlayerChanged();
             }
@@ -290,6 +280,9 @@ namespace Player.ViewModels
         private void Stop()
         {
             _vlcPlayerService.Stop();
+            // 停止播放时立即设置VideoPlayer大小为0
+            VideoPlayerWidth = 0;
+            VideoPlayerHeight = 0;
             // 播放状态将由播放器事件回调更新
         }
 
@@ -386,16 +379,7 @@ namespace Player.ViewModels
             _vlcPlayerService.Seek(position);
         }
 
-        /// <summary>
-        /// 切换全屏控制栏的显示状态
-        /// </summary>
-        public void ToggleFullscreenControls()
-        {
-            // 这个方法用于切换控制栏的显示状态
-            // 在伪全屏模式下，我们仍然需要控制UI元素的显示/隐藏
-            // 这里可以添加相关逻辑
 
-        }
 
 
 
@@ -523,6 +507,10 @@ namespace Player.ViewModels
                     // 更新共享播放状态
                     PlaybackState.IsPlaying = true;
 
+                    // 设置VideoPlayer大小为铺满父容器
+                    VideoPlayerWidth = double.NaN; // NaN表示拉伸填充
+                    VideoPlayerHeight = double.NaN;
+
                     // 发送播放状态变更消息
                     _messengerService.Send(new PlaybackStateChangedMessage(true));
                 }
@@ -542,6 +530,8 @@ namespace Player.ViewModels
                 {
                     // 更新共享播放状态
                     PlaybackState.IsPlaying = false;
+
+                    // 暂停时不改变VideoPlayer大小，保持当前画面显示
 
                     // 发送播放状态变更消息
                     _messengerService.Send(new PlaybackStateChangedMessage(false));
@@ -563,6 +553,10 @@ namespace Player.ViewModels
                     // 更新共享播放状态
                     PlaybackState.IsPlaying = false;
 
+                    // 设置VideoPlayer大小为0，避免显示空白
+                    VideoPlayerWidth = 0;
+                    VideoPlayerHeight = 0;
+
                     // 发送播放状态变更消息
                     _messengerService.Send(new PlaybackStateChangedMessage(false));
                 }
@@ -582,6 +576,9 @@ namespace Player.ViewModels
                 {
                     // 更新共享播放状态
                     PlaybackState.IsPlaying = false;
+
+                    // 播放结束时，显示最后一帧，不改变VideoPlayer大小
+                    // 用户可以通过Stop命令或加载新媒体来改变VideoPlayer大小
 
                     // 发送播放状态变更消息
                     _messengerService.Send(new PlaybackStateChangedMessage(false));

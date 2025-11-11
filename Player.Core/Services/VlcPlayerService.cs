@@ -164,6 +164,9 @@ namespace Player.Core.Services
                     throw;
                 }
             }
+
+
+
         }
 
         public void LoadMedia(string filePath)

@@ -11,9 +11,9 @@ namespace Player.Left
         {
             if (value is bool isCollapsed)
             {
-                return isCollapsed ? 0 : GridLength.Auto; // 折叠时宽度为0，展开时宽度为240
+                return isCollapsed ? 0 : 300; // 折叠时宽度为0，展开时宽度为300
             }
-            return GridLength.Auto; // 默认展开状态
+            return 300; // 默认展开状态
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

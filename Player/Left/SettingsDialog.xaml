@@ -35,7 +35,7 @@
                         HorizontalAlignment="Right"
                         Command="{Binding CloseCommand}"
                         ToolTip="关闭">
-                    <coreHelpers:CustomIcon Kind="Close" Width="24" Height="24" Foreground="{DynamicResource PrimaryBrush}"/>
+                    <coreHelpers:CustomIcon Kind="Close" IconSize="20" Foreground="{DynamicResource PrimaryBrush}"/>
                 </Button>
             </Grid>
 

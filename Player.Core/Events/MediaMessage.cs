@@ -44,13 +44,7 @@ namespace Player.Core.Events
         public FullscreenChangedMessage(bool isFullscreen) : base(isFullscreen) { }
     }
     
-    /// <summary>
-    /// 播放列表更新消息
-    /// </summary>
-    public class PlaylistUpdatedMessage : TypedMessage<List<MediaItem>>
-    {
-        public PlaylistUpdatedMessage(List<MediaItem> playlist) : base(playlist) { }
-    }
+
     
     /// <summary>
     /// 进度跳转消息
@@ -104,5 +98,20 @@ namespace Player.Core.Events
         public override string CommandName => "ExitFullscreen";
         
         public ExitFullscreenMessage() : base(true) { }
+    }
+    
+    /// <summary>
+    /// 打开设置对话框的消息
+    /// 
+    /// MVVM架构说明：
+    /// - 用于ViewModel之间通信的消息类
+    /// - 当LeftViewModel中的OpenSettings命令被执行时发送此消息
+    /// - MainViewModel负责监听并显示SettingsDialog
+    /// </summary>
+    public class OpenSettingsMessage : CommandMessage
+    {
+        public override string CommandName => "OpenSettings";
+        
+        public OpenSettingsMessage() : base(true) { }
     }
 }

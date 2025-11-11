@@ -25,10 +25,9 @@ namespace Player.Core.Repositories
         /// </summary>
         public MediaRepository()
         {
-            // 历史记录文件路径 - 与FileHistoryManager使用相同的路径
-            string jsonDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JSON");
-            Directory.CreateDirectory(jsonDirectory);
-            _historyFilePath = Path.Combine(jsonDirectory, "history.json");
+            // 使用SettingPath中的历史记录路径
+            Directory.CreateDirectory(SettingPath.JsonDirectory);
+            _historyFilePath = SettingPath.HistoryPath;
             
             // 支持的媒体文件扩展名
             _supportedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -133,26 +132,42 @@ namespace Player.Core.Repositories
                 // 提取文件路径列表
                 List<string> filePaths = items.Select(item => item.Path).ToList();
                 
-                // 更新当前日期的文件列表 - 追加而不是覆盖
+                // 更新当前日期的文件列表 - 先获取现有记录，然后合并新记录
+                List<string> updatedFiles = new List<string>();
+                
                 if (historyData.ContainsKey(currentDate))
                 {
-                    // 如果日期已存在，追加新文件（去重）
+                    // 获取现有文件列表
                     var existingFiles = historyData[currentDate];
-                    foreach (var newPath in filePaths)
+                    
+                    // 合并新旧文件，去重并保持顺序
+                    // 先添加新文件（最新的在前面），然后添加已有的、不在新文件列表中的文件
+                    foreach (var newFile in filePaths)
                     {
-                        if (!existingFiles.Contains(newPath))
+                        if (!updatedFiles.Contains(newFile))
                         {
-                            existingFiles.Add(newPath);
+                            updatedFiles.Add(newFile);
+                        }
+                    }
+                    
+                    foreach (var existingFile in existingFiles)
+                    {
+                        if (!updatedFiles.Contains(existingFile))
+                        {
+                            updatedFiles.Add(existingFile);
                         }
                     }
                 }
                 else
                 {
-                    // 如果日期不存在，创建新列表
-                    historyData[currentDate] = filePaths;
+                    // 如果日期不存在，直接使用新文件列表
+                    updatedFiles = filePaths;
                 }
                 
-                // 序列化并保存
+                // 更新该日期的文件列表
+                historyData[currentDate] = updatedFiles;
+                
+                // 序列化并保存 - 完整覆盖文件，而不是追加
                 var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
                 string updatedJson = System.Text.Json.JsonSerializer.Serialize(historyData, options);
                 await File.WriteAllTextAsync(_historyFilePath, updatedJson);
@@ -352,6 +367,78 @@ namespace Player.Core.Repositories
             }
             
             return mediaItems;
+        }
+        
+        /// <summary>
+        /// 删除单个历史记录项
+        /// </summary>
+        public async Task RemoveHistoryItemAsync(DateTime date, string filePath)
+        {
+            try
+            {
+                if (File.Exists(_historyFilePath))
+                {
+                    var json = await File.ReadAllTextAsync(_historyFilePath);
+                    var historyData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+                    
+                    if (historyData != null)
+                    {
+                        string dateKey = date.ToString("yyyy-MM-dd");
+                        if (historyData.TryGetValue(dateKey, out List<string>? filePaths))
+                        {
+                            filePaths.Remove(filePath);
+                            // 如果该日期下没有文件了，则删除该日期条目
+                            if (filePaths.Count == 0)
+                            {
+                                historyData.Remove(dateKey);
+                            }
+                            
+                            // 保存更新后的历史记录
+                            var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
+                            string updatedJson = System.Text.Json.JsonSerializer.Serialize(historyData, options);
+                            await File.WriteAllTextAsync(_historyFilePath, updatedJson);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"删除历史记录项失败: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// 清除指定日期的所有历史记录
+        /// </summary>
+        public async Task ClearHistoryByDateAsync(DateTime date)
+        {
+            try
+            {
+                if (File.Exists(_historyFilePath))
+                {
+                    var json = await File.ReadAllTextAsync(_historyFilePath);
+                    var historyData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+                    
+                    if (historyData != null)
+                    {
+                        string dateKey = date.ToString("yyyy-MM-dd");
+                        if (historyData.ContainsKey(dateKey))
+                        {
+                            // 删除该日期的所有历史记录
+                            historyData.Remove(dateKey);
+                            
+                            // 保存更新后的历史记录
+                            var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
+                            string updatedJson = System.Text.Json.JsonSerializer.Serialize(historyData, options);
+                            await File.WriteAllTextAsync(_historyFilePath, updatedJson);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"清除历史记录失败: {ex.Message}");
+            }
         }
     }
 }

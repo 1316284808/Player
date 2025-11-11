@@ -135,7 +135,6 @@ namespace Player.ViewModels
             _messengerService.Register<ProgressUpdatedMessage>(this, OnProgressUpdatedMessage);
             _messengerService.Register<OpenSettingsMessage>(this, OnOpenSettingsMessage);
             _messengerService.Register<FullscreenChangedMessage>(this, OnFullscreenChangedMessage);
-            _messengerService.Register<PlaylistUpdatedMessage>(this, OnPlaylistUpdatedMessage);
         }
 
         #region RelayCommands
@@ -292,44 +291,7 @@ namespace Player.ViewModels
 
         #region Event Handlers
 
-        /// <summary>
-        /// 进度更新定时器事件
-        /// </summary>
-        // 移除进度更新定时器逻辑，现在使用VLC的TimeChanged事件更新进度
-        // private void OnProgressTimerTick(object? sender, EventArgs e)
-        // {
-        //     // 重构：使用定时器稳定更新进度，避免VLC事件循环问题
-        //     if (MiddleViewModel?.MediaPlayer != null && PlaybackState.IsPlaying)
-        //     {
-        //         try
-        //         {
-        //             var currentTime = MiddleViewModel.MediaPlayer.Time;
-        //             var totalTime = MiddleViewModel.MediaPlayer.Length;
-        //             
-        //             if (totalTime > 0)
-        //             {
-        //                 // 直接更新共享状态，避免事件循环
-        //                 PlaybackState.CurrentTime = currentTime;
-        //                 PlaybackState.TotalDuration = totalTime;
-        //                 PlaybackState.Position = (double)currentTime / totalTime * 100;
-        //                 
-        //                 // 更新UI显示的时间
-        //                 CurrentTime = FormatTime(currentTime);
-        //                 TotalTime = FormatTime(totalTime);
-        //                 Progress = (double)currentTime / totalTime;
-        //             }
-        //         }
-        //         catch (Exception ex)
-        //         {
-        //             // 忽略定时器异常，避免UI卡死
-        //             System.Diagnostics.Debug.WriteLine($"进度更新异常: {ex.Message}");
-        //         }
-        //     }
-        // }
-
-        /// <summary>
-        /// 处理播放状态变更消息
-        /// </summary>
+      
         private void OnPlaybackStateChangedMessage(object recipient, PlaybackStateChangedMessage message)
         {
             // 更新共享播放状态
@@ -423,36 +385,7 @@ namespace Player.ViewModels
             }
         }
 
-        /// <summary>
-        /// 处理播放列表更新消息
-        /// </summary>
-        private void OnPlaylistUpdatedMessage(object recipient, PlaylistUpdatedMessage message)
-        {
-            try
-            {
-                // 清空当前播放列表
-                Playlist.Clear();
-                
-                // 添加新的播放列表项
-                if (message.Value != null)
-                {
-                    foreach (var mediaItem in message.Value)
-                    {
-                        Playlist.Add(mediaItem);
-                    }
-                }
-                
-                // 自动选择第一个媒体项（可选）
-                if (Playlist.Count > 0)
-                {
-                    SelectedMediaItem = Playlist[0];
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"处理播放列表更新消息失败: {ex.Message}");
-            }
-        }
+      
 
         #endregion
 

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="LibVLCSharp" Version="3.9.4" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />

@@ -11,10 +11,11 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainViewModel, IsDesignTimeCreatable=True}"
         Title="{Binding WindowTitle}" Icon="/a4mbd-h9wgx.png"
-        Background="#F5F5F5"
-        WindowState="Normal"
-        Width="1024"
-        Height="768">
+        Background="Transparent" 
+        Opacity="0.85"
+        Width="1200"
+        Height="800"
+       > 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- 反向布尔值到可见性转换器 -->
@@ -30,9 +31,10 @@
             <Setter Property="WindowStyle" Value="{Binding PlaybackState.IsFullscreen, Converter={StaticResource WindowStyleConverter}}" />
         </Style>
     </Window.Style>
-    
 
     
+    
+
     <!-- 主Grid -->
     <Grid AllowDrop="True" Background="#F5F5F5">
         <!-- 列定义：左侧固定宽度，右侧自动填充剩余空间 -->

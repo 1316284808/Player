@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using Player.Core.Models;
 
 namespace Player.Core.Services
 {
@@ -21,10 +22,9 @@ namespace Player.Core.Services
         
         public FileHistoryManager()
         {
-            // 设置历史记录文件路径
-            string appDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JSON");
-            Directory.CreateDirectory(appDataPath);
-            _historyFilePath = Path.Combine(appDataPath, "history.json");
+            // 使用SettingPath中的历史记录路径
+            Directory.CreateDirectory(SettingPath.JsonDirectory);
+            _historyFilePath = SettingPath.HistoryPath;
         }
         
         public void LoadHistory()
@@ -103,7 +103,7 @@ namespace Player.Core.Services
             // 添加到列表开头（最新的在前面）
             _historyData[dateKey].Insert(0, filePath);
             
-            // 自动保存
+            // 自动保存 - 这里会清空该日期的记录并重新写入完整的列表
             SaveHistory();
         }
         
@@ -121,6 +121,21 @@ namespace Player.Core.Services
         {
             _historyData.Clear();
             SaveHistory();
+        }
+        
+        public void RemoveHistoryItem(DateTime date, string filePath)
+        {
+            string dateKey = date.ToString("yyyy-MM-dd");
+            if (_historyData.TryGetValue(dateKey, out List<string>? files))
+            {
+                files.Remove(filePath);
+                // 如果该日期下没有文件了，则删除该日期条目
+                if (files.Count == 0)
+                {
+                    _historyData.Remove(dateKey);
+                }
+                SaveHistory();
+            }
         }
     }
 }
